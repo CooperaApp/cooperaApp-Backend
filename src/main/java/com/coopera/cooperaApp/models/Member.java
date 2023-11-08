@@ -27,7 +27,7 @@ public class Member {
     private String position;
     private String email;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private List<Role> roles;
     private String password;
     private String phoneNumber;
     @OneToMany

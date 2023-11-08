@@ -1,6 +1,7 @@
 package com.coopera.cooperaApp.enums;
 
 public enum Role {
-    USER,
-    ADMIN
+
+    MEMBER, ADMIN
+
 }
