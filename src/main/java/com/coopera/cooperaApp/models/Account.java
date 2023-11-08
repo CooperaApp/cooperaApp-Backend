@@ -1,4 +1,4 @@
-package com.coopera.cooperaApp.data.models;
+package com.coopera.cooperaApp.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,7 +17,7 @@ import lombok.Setter;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
     private String bankName;
     private String accountName;
 

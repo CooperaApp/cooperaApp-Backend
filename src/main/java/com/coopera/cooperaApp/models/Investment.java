@@ -1,5 +1,7 @@
-package com.coopera.cooperaApp.data.models;
+package com.coopera.cooperaApp.models;
 
+import com.coopera.cooperaApp.enums.InvestmentCategory;
+import com.coopera.cooperaApp.enums.InvestmentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,9 +16,9 @@ import lombok.Setter;
 public class Investment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
     @Enumerated(EnumType.STRING)
-    private  InvestmentType investmentType;
+    private InvestmentType investmentType;
     @Enumerated(EnumType.STRING)
     private InvestmentCategory investmentCategory;
 

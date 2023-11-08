@@ -1,5 +1,6 @@
-package com.coopera.cooperaApp.data.models;
+package com.coopera.cooperaApp.models;
 
+import com.coopera.cooperaApp.enums.PartneringCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,14 +12,15 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Company {
+public class PartneringCompany {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private  String id;
     private String name;
     private String rcNumber;
+    @Enumerated(EnumType.STRING)
+    private PartneringCategory partneringCategory;
     private String address;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Cooperative cooperative;
-
+    private String number;
+    private String email;
 }

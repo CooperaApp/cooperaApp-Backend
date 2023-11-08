@@ -1,5 +1,6 @@
-package com.coopera.cooperaApp.data.models;
+package com.coopera.cooperaApp.models;
 
+import com.coopera.cooperaApp.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
     private String firstName;
     private String lastName;
     private String department;
