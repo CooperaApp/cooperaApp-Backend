@@ -18,7 +18,7 @@ import java.io.IOException;
 import static com.coopera.cooperaApp.security.SecurityUtils.BADCREDENTIALSEXCEPTION;
 
 @AllArgsConstructor
-@Component
+
 public class CooperaAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;

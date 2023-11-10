@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.coopera.cooperaApp.enums.Role;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Member;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Instant;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.coopera.cooperaApp.security.SecurityUtils.JWT_SECRET;
-
+@AllArgsConstructor
 public class JwtUtil {
 
     @Value(JWT_SECRET)
