@@ -1,4 +1,4 @@
-package com.coopera.cooperaApp.data.models;
+package com.coopera.cooperaApp.enums;
 
 public enum InvestmentType {
     LOW_RISK,

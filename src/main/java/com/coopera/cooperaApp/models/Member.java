@@ -1,23 +1,23 @@
-package com.coopera.cooperaApp.data.models;
+package com.coopera.cooperaApp.models;
 
-import jakarta.persistence.*;
+import com.coopera.cooperaApp.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Entity
+@Document
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Member {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+
+    private String id;
     private String firstName;
     private String lastName;
     private String department;
@@ -25,16 +25,16 @@ public class Member {
     private String photo;
     private String position;
     private String email;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+  //  @Enumerated(EnumType.STRING)
+    private List<Role> roles;
     private String password;
     private String phoneNumber;
-    @OneToMany
-    @JoinColumn(name = "savings_id")
+  //  @OneToMany
+ //   @JoinColumn(name = "savings_id")
     private List<Savings> savings;
-    @OneToOne
+ //   @OneToOne
     private Account account;
-    @OneToOne
+ //   @OneToOne
     private Loan loan;
     private BigDecimal balance;
 }
