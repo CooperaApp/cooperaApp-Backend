@@ -31,7 +31,6 @@ public class CooperaCompanyService implements CompanyService {
     private final MemberService memberService;
 
     public InitializeCompanyResponse registerCompany(RegisterCompanyRequest request) throws CooperaException {
-
     validateRegistrationRequest(request);
     MemberResponse memberResponse = memberService.registerMember(request.getMemberRequest());
     memberService.setMemberRoleToAdmin(memberResponse.getId());

@@ -34,8 +34,7 @@ public class SecurityConfig {
                 sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authorizationFilter, CooperaAuthenticationFilter.class)
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(request -> request.requestMatchers("v1/admin/register-cooperative-mock").permitAll())
-                .authorizeHttpRequests(request -> request.requestMatchers("v1/admin/test-token-mock").hasAnyAuthority(Role.ADMIN.name()))
+                .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/company").permitAll())
                 .build();
     }
 

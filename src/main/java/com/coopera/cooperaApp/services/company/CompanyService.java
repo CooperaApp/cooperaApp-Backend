@@ -5,5 +5,7 @@ import com.coopera.cooperaApp.dtos.response.InitializeCompanyResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 
 public interface CompanyService {
+
     InitializeCompanyResponse registerCompany (RegisterCompanyRequest request) throws CooperaException;
+
 }
