@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Document
@@ -24,7 +25,7 @@ public class Member {
     private String position;
     private String email;
   //  @Enumerated(EnumType.STRING)
-    private List<Role> roles;
+    private List<Role> roles  = new ArrayList<>();
     private String password;
     private String phoneNumber;
   //  @OneToMany

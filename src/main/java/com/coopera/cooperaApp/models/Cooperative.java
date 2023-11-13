@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,11 +25,10 @@ public class Cooperative {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateCreated;
-    private String numberOfMember;
+    private int numberOfMember;
     private String logo;
 
-    private List<Member> members;
-
+    private List<String> membersId = new ArrayList<>();
    private List<PartneringCompany> partneringCompanies;
 
    private List<Investment> investments;

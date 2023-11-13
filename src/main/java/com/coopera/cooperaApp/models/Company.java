@@ -16,6 +16,6 @@ public class Company {
     private String name;
     private String rcNumber;
     private String address;
-    private Cooperative cooperative;
+    private String cooperativeId;
 
 }
