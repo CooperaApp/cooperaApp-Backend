@@ -8,6 +8,7 @@ import com.coopera.cooperaApp.models.Member;
 import com.coopera.cooperaApp.repositories.MemberRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,9 +20,10 @@ import java.util.Optional;
 public class CooperaMemberService implements MemberService{
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public MemberResponse registerMember(RegisterMemberRequest request) throws CooperaException {
-        findMemberByEmail(request);
+        checkIfMemberExistByEmail(request);
         Member newMember = initializeNewMember(request);
         var savedMember = memberRepository.save(newMember);
       if (savedMember.getId() == null) throw new CooperaException("Member Registration failed");
@@ -51,20 +53,20 @@ public class CooperaMemberService implements MemberService{
 
     }
 
-    private static Member initializeNewMember(RegisterMemberRequest request) {
+    private Member initializeNewMember(RegisterMemberRequest request) {
         Member newMember = new Member();
         newMember.setFirstName(request.getFirstName());
         newMember.setLastName(request.getLastName());
         newMember.setEmail(request.getEmail());
         newMember.setBalance(BigDecimal.ZERO);
-        newMember.setPassword(request.getPassword());
+        newMember.setPassword(passwordEncoder.encode(request.getPassword()));
         newMember.setPosition(request.getPosition());
         newMember.setPhoneNumber(request.getPhoneNumber());
         newMember.getRoles().add(Role.MEMBER);
         return newMember;
     }
 
-    private void findMemberByEmail(RegisterMemberRequest request) throws CooperaException {
+    private void checkIfMemberExistByEmail(RegisterMemberRequest request) throws CooperaException {
         Optional<Member> existingMember = memberRepository.findByEmail(request.getEmail());
         if (existingMember.isPresent()) {
             throw new CooperaException("Member with this email already exists");
