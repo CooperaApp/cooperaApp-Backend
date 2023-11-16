@@ -28,6 +28,7 @@ public class CooperaMemberService implements MemberService{
       return MemberResponse.builder().id(savedMember.getId()).role(savedMember.getRoles()).name(savedMember.getFirstName() + " "+ savedMember.getLastName()).build();
     }
 
+
     public MemberResponse setMemberRoleToAdmin(String id) throws CooperaException {
        var foundMember  = memberRepository.findById(id);
        foundMember.orElseThrow(()->new CooperaException("Could not find member with " + id ));

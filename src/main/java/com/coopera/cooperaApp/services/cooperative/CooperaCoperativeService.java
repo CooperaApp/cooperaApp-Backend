@@ -24,6 +24,7 @@ public class CooperaCoperativeService implements CooperativeService {
         Cooperative cooperative = new Cooperative();
         cooperative.setName(request.getCooperativeName());
         cooperative.setLogo(request.getLogo());
+        // Do we need to explicitly set this? since the initial will always be Zero
         cooperative.setNumberOfMember(cooperative.getMembersId().size());
         cooperative.setDateCreated(LocalDateTime.now());
        Cooperative savedCooperative = cooperativeRepository.save(cooperative);
