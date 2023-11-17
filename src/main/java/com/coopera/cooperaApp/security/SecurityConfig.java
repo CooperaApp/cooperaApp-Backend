@@ -23,6 +23,7 @@ public class SecurityConfig {
     private final AuthenticationManager authenticationManager;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final JwtUtil jwtUtil;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         UsernamePasswordAuthenticationFilter authenticationFilter = new CooperaAuthenticationFilter(authenticationManager, objectMapper, null, null);
@@ -30,11 +31,11 @@ public class SecurityConfig {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults()).
-                sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(Customizer.withDefaults())
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authorizationFilter, CooperaAuthenticationFilter.class)
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/company").permitAll())
+                .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/cooperative").permitAll())
                 .build();
     }
 
