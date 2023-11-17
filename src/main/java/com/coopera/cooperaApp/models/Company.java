@@ -11,11 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Company {
-
     private String id;
-    private String name;
+    private String companyName;
     private String rcNumber;
     private String address;
-    private String cooperativeId;
 
 }

@@ -27,7 +27,7 @@ public class Cooperative {
     private LocalDateTime dateCreated;
     private int numberOfMember;
     private String logo;
-
+    private Company company;
     private List<String> membersId = new ArrayList<>();
    private List<PartneringCompany> partneringCompanies;
 

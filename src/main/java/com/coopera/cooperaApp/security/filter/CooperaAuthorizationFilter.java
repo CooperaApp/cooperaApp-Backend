@@ -53,7 +53,9 @@ public class CooperaAuthorizationFilter extends OncePerRequestFilter {
         String authorization = request.getHeader(AUTHORIZATION);
         String tokenPrefix = "Bearer ";
         boolean isValidAuthorizationHeader = false;
-        if (authorization != null && authorization.startsWith(tokenPrefix)) isValidAuthorizationHeader = true;
+        if (authorization != null && authorization.startsWith(tokenPrefix))
+            isValidAuthorizationHeader = true;
+
         if (isValidAuthorizationHeader) {
             String token = authorization.substring(tokenPrefix.length());
             authorizeToken(token);
