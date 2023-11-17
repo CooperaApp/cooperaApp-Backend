@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
 
 @Getter
@@ -11,11 +12,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Company {
-
     private String id;
-    private String name;
+    private String companyName;
     private String rcNumber;
     private String address;
-    private String cooperativeId;
 
 }

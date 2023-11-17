@@ -1,9 +1,7 @@
 package com.coopera.cooperaApp.controllers;
 
-import com.coopera.cooperaApp.dtos.requests.RegisterCompanyRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
-import com.coopera.cooperaApp.dtos.response.InitializeCompanyResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +17,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CompanyControllerTest {
+public class CooperativeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void registerComapany() throws Exception {
+    public void registerCooperative() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        RegisterCooperativeRequest coopRequest = new RegisterCooperativeRequest();
-        coopRequest.setLogo("Work Hard , Save Hard");
-        coopRequest.setCooperativeName("REGNOS");
-        RegisterMemberRequest member = getRegisterMemberRequest();
-        RegisterCompanyRequest registrationRequest = getRegisterCompanyRequest(coopRequest, member);
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/company")
+        RegisterCooperativeRequest registrationRequest = getRegisterCooperativeRequest(getRegisterMemberRequest());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/cooperative")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(mapper.writeValueAsBytes(registrationRequest)))
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CREATED.value()))
@@ -40,11 +34,12 @@ public class CompanyControllerTest {
 
     }
 
-    private static RegisterCompanyRequest getRegisterCompanyRequest(RegisterCooperativeRequest coopRequest, RegisterMemberRequest member) {
-        RegisterCompanyRequest registrationRequest = new RegisterCompanyRequest();
-        registrationRequest.setCooperativeRequest(coopRequest);
+    private static RegisterCooperativeRequest getRegisterCooperativeRequest(RegisterMemberRequest member) {
+        RegisterCooperativeRequest registrationRequest = new RegisterCooperativeRequest();
+        registrationRequest.setLogo("Work Hard , Save Hard");
         registrationRequest.setMemberRequest(member);
-        registrationRequest.setCompanyAddress("312, herbert macaulay");
+        registrationRequest.setName("REGNOS");
+        registrationRequest.setAddress("312, herbert macaulay");
         registrationRequest.setRcNumber("179092004");
         registrationRequest.setCompanyName("Coopera");
         return registrationRequest;
