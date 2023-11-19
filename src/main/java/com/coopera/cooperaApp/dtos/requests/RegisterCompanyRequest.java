@@ -5,15 +5,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter@Setter
-public class RegisterCooperativeRequest {
-
-    @NotBlank(message = "Cooperative name is required.")
-    private String name;
-
-    @NotBlank
-    private String logo;
-
+@Getter
+@Setter
+public class RegisterCompanyRequest {
     @NotBlank(message = "Company name is required.")
     @Size
     private String companyName;
@@ -22,8 +16,13 @@ public class RegisterCooperativeRequest {
     private String rcNumber;
 
     @NotBlank(message = "Company address is required.")
-    private String address;
+    private String companyAddress;
 
-  //  private RegisterMemberRequest memberRequest;
+    private RegisterCooperativeRequest cooperativeRequest;
+
+    private RegisterMemberRequest memberRequest;
 
 }
+
+
+

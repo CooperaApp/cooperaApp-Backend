@@ -37,7 +37,7 @@ public class CooperativeControllerTest {
     private static RegisterCooperativeRequest getRegisterCooperativeRequest(RegisterMemberRequest member) {
         RegisterCooperativeRequest registrationRequest = new RegisterCooperativeRequest();
         registrationRequest.setLogo("Work Hard , Save Hard");
-        registrationRequest.setMemberRequest(member);
+     //   registrationRequest.setMemberRequest(member);
         registrationRequest.setName("REGNOS");
         registrationRequest.setAddress("312, herbert macaulay");
         registrationRequest.setRcNumber("179092004");
