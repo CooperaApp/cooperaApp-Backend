@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.coopera.cooperaApp.dtos.requests.EmailDetails;
 import com.coopera.cooperaApp.dtos.requests.InvitationLinkRequest;
+import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.security.JwtUtil;
 import com.coopera.cooperaApp.security.SecurityUtils;
 import com.coopera.cooperaApp.services.Mail.MailService;
@@ -27,7 +28,7 @@ public class CooperaAdminService implements AdminService{
 
     public static final String JWT_SECRET = "${jwt.secret}";
     @Override
-    public String generateInvitationLink(String recipient) {
+    public String generateInvitationLink(String recipient) throws CooperaException {
         String memberId = generateMemberId();
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 
@@ -42,9 +43,11 @@ public class CooperaAdminService implements AdminService{
         emailDetails.setRecipient(recipient);
         emailDetails.setMsgBody(link);
         emailDetails.setSubject("Please Login with the Link Within the Hour");
-        mailService.sendEmail(emailDetails);
+       String response =  mailService.sendEmail(emailDetails);
 
-        return "Email Sent successfully";
+       if (response.equals("success")) return "Invitation Link send successfully";
+
+       else throw new CooperaException(response);
     }
 
     private String generateMemberId(){

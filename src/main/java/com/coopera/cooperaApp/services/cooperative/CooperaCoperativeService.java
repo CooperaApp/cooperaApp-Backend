@@ -28,13 +28,10 @@ import java.util.Set;
 @Slf4j
 public class CooperaCoperativeService implements CooperativeService {
     private final CooperativeRepository cooperativeRepository;
- //  private final MemberService memberService;
     private final ModelMapper modelMapper;
 
     public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request) throws CooperaException {
         validateRegistrationRequest(request);
-    //    MemberResponse memberResponse = memberService.registerMember(request.getMemberRequest());
-     //   memberService.setMemberRoleToAdmin(memberResponse.getId());
         Company company = new Company();
         modelMapper.map(request, company);
         Cooperative cooperative = initializeCooperativeData(request,  company);
@@ -50,7 +47,6 @@ public class CooperaCoperativeService implements CooperativeService {
         cooperative.setName(request.getName());
         cooperative.setLogo(request.getLogo());
         cooperative.setCompany(company);
-    //    cooperative.getMembersId().add(memberResponse.getId());
         cooperative.setNumberOfMember(cooperative.getMembersId().size());
         cooperative.setDateCreated(LocalDateTime.now());
         return cooperative;

@@ -34,9 +34,6 @@ public class RegisterMemberRequest {
     @Size(min = 11, message = "Phone number must have at least 11 characters")
     private String phoneNumber;
 
-
-    private String memberId;
-
-    private String cooperativeId;
+    private String token;
 
 }

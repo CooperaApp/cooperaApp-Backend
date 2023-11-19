@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authorizationFilter, CooperaAuthenticationFilter.class)
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/cooperative").permitAll())
+                .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/cooperative/register", "/api/v1/admin/generateLink", "api/v1/member/register").permitAll())
                 .build();
     }
 

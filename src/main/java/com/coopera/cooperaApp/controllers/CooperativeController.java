@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class CooperativeController {
     private final CooperativeService cooperativeService;
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> registerCooperative(@RequestBody RegisterCooperativeRequest request) {
         try {
             var response = cooperativeService.registerCooperative(request);
-            System.out.println(response.toString());
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
                     .message("Company registration successful")
                     .success(true)

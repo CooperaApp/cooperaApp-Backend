@@ -30,16 +30,15 @@ public class CooperaMailService implements MailService{
         try {
             SimpleMailMessage mailMessage
                     = new SimpleMailMessage();
-            mailMessage.setFrom(sender);
+            mailMessage.setFrom("cooperaapp010@gmail.com");
             mailMessage.setTo(details.getRecipient());
             mailMessage.setText(details.getMsgBody());
             mailMessage.setSubject(details.getSubject());
             javaMailSender.send(mailMessage);
-            return "Mail Sent Successfully...";
+            return "success";
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
-            return "Error while Sending Mail";
+            return e.getMessage();
         }
     }
 
