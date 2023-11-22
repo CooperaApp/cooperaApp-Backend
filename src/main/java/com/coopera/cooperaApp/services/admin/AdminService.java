@@ -5,7 +5,7 @@ import com.coopera.cooperaApp.exceptions.CooperaException;
 
 public interface AdminService {
 
-    String generateInvitationLink(String recipient) throws CooperaException;
+    Object generateInvitationLink(InvitationLinkRequest recipient) throws CooperaException;
 
 
 

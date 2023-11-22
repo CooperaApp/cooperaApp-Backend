@@ -2,15 +2,16 @@ package com.coopera.cooperaApp.dtos.requests;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
+import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class InvitationLinkRequest {
 
-    private String memberId;
-
-    private String cooperativeId;
-
+    private List<String> recipientEmail;
 
 
 
