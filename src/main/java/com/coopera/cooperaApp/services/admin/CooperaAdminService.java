@@ -16,11 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
-import static com.coopera.cooperaApp.security.SecurityUtils.JWT_SECRET;
 
 @AllArgsConstructor
 @Service
@@ -37,22 +34,29 @@ public class CooperaAdminService implements AdminService{
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         List<String> requestList = recipient.getRecipientEmail();
         int successCount = 0;
+        String link = generateInviteLink(memberId, cooperativeId);
+        successCount = sendInviteToRecipient(requestList, link, successCount);
+        return emailSenderResponse(successCount);
+    }
 
-        String link = "localhost:3000/membersLogin?token=" + JWT.create().withIssuedAt(Instant.now()).
+    private static String generateInviteLink(String memberId, String cooperativeId) {
+        return "localhost:3000/membersLogin?token=" + JWT.create().withIssuedAt(Instant.now()).
                 withClaim("memberId", memberId).
                 withClaim("cooperativeId", cooperativeId).
                 withExpiresAt(Instant.now().plusSeconds(864000L))
                 .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
+    }
 
-        for (int i = 0; i < requestList.size(); i++) {
+    private int sendInviteToRecipient(List<String> requestList, String link, int successCount) {
+        for (String recipientMail : requestList) {
             EmailDetails emailDetails = new EmailDetails();
-        emailDetails.setRecipient(requestList.get(i));
-        emailDetails.setMsgBody(link);
-        emailDetails.setSubject("Please Login with the Link Within the Hour");
-       String response =  mailService.sendEmail(emailDetails);
-      if (response.equals("success")) successCount++;
+            emailDetails.setRecipient(recipientMail);
+            emailDetails.setMsgBody(link);
+            emailDetails.setSubject("Please Login with the Link Within the Hour");
+            String response = mailService.sendEmail(emailDetails);
+            if (response.equals("success")) successCount++;
         }
-        return emailSenderResponse(successCount);
+        return successCount;
     }
 
     private Object emailSenderResponse(int successCount) throws CooperaException {
