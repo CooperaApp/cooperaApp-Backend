@@ -70,9 +70,5 @@ public class CooperaAdminService implements AdminService{
         var currentSizeOfMembersPlusOne = memberService.findAllMembers().size() + 1;
         return cooperativeId + "/" + currentSizeOfMembersPlusOne;
 
-
-
-
-
     }
 }

@@ -20,17 +20,11 @@ public class AdminController {
 
     @PostMapping("/generateLink")
 
-    public ResponseEntity<ApiResponse<?>> generate(@RequestBody InvitationLinkRequest email){
 
-        try {
-            var response =   adminService.generateInvitationLink(email);
-            System.out.println(email);
-            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder().success(true).message((String) response).build());
-        } catch (CooperaException e) {
-            return ResponseEntity.badRequest().
-                    body(ApiResponse.builder().message("Unable to send Mail").success(false).build());
+        public ResponseEntity<?> generate (@RequestBody InvitationLinkRequest requests) throws CooperaException {
+            return new ResponseEntity<>(adminService.generateInvitationLink(requests), HttpStatus.CREATED);
+
         }
+
+
     }
-
-
-}
