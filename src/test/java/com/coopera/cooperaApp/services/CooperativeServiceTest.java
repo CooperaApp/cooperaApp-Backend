@@ -38,7 +38,7 @@ public class CooperativeServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getNumberOfMembers()).isEqualTo(1);
         assertThat(response.getName()).isEqualTo("REGNOS");
-        
+
     }
     private static RegisterCooperativeRequest getRegisterCooperativeRequest(RegisterMemberRequest member) {
         RegisterCooperativeRequest registrationRequest = new RegisterCooperativeRequest();
