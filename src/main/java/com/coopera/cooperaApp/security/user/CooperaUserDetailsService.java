@@ -1,8 +1,10 @@
 package com.coopera.cooperaApp.security.user;
 
 import com.coopera.cooperaApp.models.Member;
+import com.coopera.cooperaApp.repositories.CooperativeRepository;
 import com.coopera.cooperaApp.repositories.MemberRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +14,7 @@ import java.util.Optional;
 
 @Component
 @AllArgsConstructor
+//@Primary
 public class CooperaUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;

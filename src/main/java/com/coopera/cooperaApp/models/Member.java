@@ -30,7 +30,7 @@ public class Member {
     private String phoneNumber;
   //  @OneToMany
  //   @JoinColumn(name = "savings_id")
-    private List<Savings> savings;
+  //  private List<Savings> savings;
  //   @OneToOne
     private Account account;
  //   @OneToOne

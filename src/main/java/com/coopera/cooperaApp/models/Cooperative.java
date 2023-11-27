@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Document
 public class Cooperative {
 
     private String id;
@@ -28,6 +30,7 @@ public class Cooperative {
     private int numberOfMember;
     private String logo;
     private Company company;
+    private String password;
     private List<String> membersId = new ArrayList<>();
    private List<PartneringCompany> partneringCompanies;
 

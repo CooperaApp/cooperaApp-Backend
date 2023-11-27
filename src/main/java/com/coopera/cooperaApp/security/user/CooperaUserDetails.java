@@ -18,6 +18,8 @@ public class CooperaUserDetails implements UserDetails {
 
     private final Member member;
 
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities= new ArrayList<>();
@@ -30,12 +32,12 @@ public class CooperaUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return member.getEmail();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.coopera.cooperaApp.controllers;
 
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
+import com.coopera.cooperaApp.dtos.requests.SaveRequest;
 import com.coopera.cooperaApp.dtos.response.ApiResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.services.member.MemberService;
@@ -29,4 +30,18 @@ public class MemberController {
             return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
         }
     }
+    @PostMapping("/save")
+
+    public ResponseEntity<ApiResponse<?>> save(@RequestBody SaveRequest saveRequest)  {
+        try {
+            var response =  memberService.saveToCooperative(saveRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message(response.getMessage()).data(response).success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+
+
 }
