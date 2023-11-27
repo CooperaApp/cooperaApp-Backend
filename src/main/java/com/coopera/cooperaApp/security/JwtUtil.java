@@ -10,9 +10,9 @@ import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.coopera.cooperaApp.security.SecurityUtils.JWT_SECRET;
@@ -39,8 +39,8 @@ public class JwtUtil {
         return verifier.verify(token);
     }
 
-    public String generateAccessToken(Member member, Role role){
-        var listOfCurrentUserRoles = member.getRoles();
+    public String generateAccessToken(Member member, Role role) {
+        List<Role> listOfCurrentUserRoles = member.getRoles();
         listOfCurrentUserRoles.add(role);
         Map<String, String> map = new HashMap<>();
         int number = 1;
@@ -51,4 +51,5 @@ public class JwtUtil {
         return JWT.create().withIssuedAt(Instant.now()).withExpiresAt(Instant.now().plusSeconds(86000L)).
                 withClaim("Roles", map).withClaim("userId", member.getId()).sign(Algorithm.HMAC512(secret.getBytes()));
     }
+
 }

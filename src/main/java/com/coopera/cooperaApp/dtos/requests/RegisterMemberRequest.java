@@ -33,4 +33,7 @@ public class RegisterMemberRequest {
     @NotBlank
     @Size(min = 11, message = "Phone number must have at least 11 characters")
     private String phoneNumber;
+
+    private String token;
+
 }

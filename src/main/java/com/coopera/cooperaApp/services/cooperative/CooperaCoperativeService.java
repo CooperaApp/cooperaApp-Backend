@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -27,27 +28,25 @@ import java.util.Set;
 @Slf4j
 public class CooperaCoperativeService implements CooperativeService {
     private final CooperativeRepository cooperativeRepository;
-    private final MemberService memberService;
     private final ModelMapper modelMapper;
 
     public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request) throws CooperaException {
         validateRegistrationRequest(request);
-        MemberResponse memberResponse = memberService.registerMember(request.getMemberRequest());
-        memberService.setMemberRoleToAdmin(memberResponse.getId());
         Company company = new Company();
         modelMapper.map(request, company);
-        Cooperative cooperative = initializeCooperativeData(request, memberResponse, company);
+        Cooperative cooperative = initializeCooperativeData(request,  company);
+        cooperative.setId(generateId(request.getName()));
         Cooperative savedCooperative = cooperativeRepository.save(cooperative);
         if(savedCooperative.getId() == null) throw new CooperaException("Cooperative registration failed");
         return RegisterCooperativeResponse.builder().id(savedCooperative.getId()).name(savedCooperative.getName()).numberOfMembers(savedCooperative.getNumberOfMember()).build();
+
     }
 
-    private static Cooperative initializeCooperativeData(RegisterCooperativeRequest request, MemberResponse memberResponse, Company company) {
+    private static Cooperative initializeCooperativeData(RegisterCooperativeRequest request, Company company) {
         Cooperative cooperative = new Cooperative();
         cooperative.setName(request.getName());
         cooperative.setLogo(request.getLogo());
         cooperative.setCompany(company);
-        cooperative.getMembersId().add(memberResponse.getId());
         cooperative.setNumberOfMember(cooperative.getMembersId().size());
         cooperative.setDateCreated(LocalDateTime.now());
         return cooperative;
@@ -67,8 +66,25 @@ public class CooperaCoperativeService implements CooperativeService {
         }
     }
 
+    public String generateId(String name){
+        String firstPart = name.substring(0, 3);
+        int currentYear = LocalDateTime.now().getYear();
+        int sizeOfRepoPlusOne = cooperativeRepository.findAll().size() + 1;
+        return firstPart + "/" + currentYear + "/" + "00"+sizeOfRepoPlusOne;
+    }
+
     @Override
     public void deleteAll() {
         cooperativeRepository.deleteAll();
+    }
+
+    @Override
+    public Optional<Cooperative> findByCooperativeById(String id) {
+        return cooperativeRepository.findById(id);
+    }
+
+    @Override
+    public void save(Cooperative cooperative) {
+        cooperativeRepository.save(cooperative);
     }
 }

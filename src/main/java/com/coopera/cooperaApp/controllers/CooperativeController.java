@@ -1,3 +1,4 @@
+
 package com.coopera.cooperaApp.controllers;
 
 import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class CooperativeController {
     private final CooperativeService cooperativeService;
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> registerCooperative(@RequestBody RegisterCooperativeRequest request) {
         try {
             var response = cooperativeService.registerCooperative(request);
@@ -34,3 +35,4 @@ public class CooperativeController {
         }
     }
 }
+

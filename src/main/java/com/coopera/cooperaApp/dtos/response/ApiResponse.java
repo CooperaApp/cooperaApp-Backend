@@ -6,6 +6,9 @@ import lombok.*;
 
 
 @Builder
+@Setter
+@ToString
+@Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 

@@ -4,6 +4,7 @@ import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
 import com.coopera.cooperaApp.dtos.response.RegisterCooperativeResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
+import com.coopera.cooperaApp.services.cooperative.CooperaCoperativeService;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,9 @@ public class CooperativeServiceTest {
 
     @Autowired
     private CooperativeService cooperativeService;
+
+    @Autowired
+    private  CooperaCoperativeService cooperaCoperativeService;
     private RegisterCooperativeResponse response;
 
     @BeforeEach
@@ -43,11 +47,12 @@ public class CooperativeServiceTest {
     private static RegisterCooperativeRequest getRegisterCooperativeRequest(RegisterMemberRequest member) {
         RegisterCooperativeRequest registrationRequest = new RegisterCooperativeRequest();
         registrationRequest.setLogo("Work Hard , Save Hard");
-        registrationRequest.setMemberRequest(member);
+    //    registrationRequest.setMemberRequest(member);
         registrationRequest.setName("REGNOS");
         registrationRequest.setAddress("312, herbert macaulay");
         registrationRequest.setRcNumber("179092004");
         registrationRequest.setCompanyName("Coopera");
         return registrationRequest;
     }
+
 }
