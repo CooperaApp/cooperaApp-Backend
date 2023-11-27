@@ -17,7 +17,7 @@ public class CooperativeDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return cooperative.getPassword();
     }
 
     @Override

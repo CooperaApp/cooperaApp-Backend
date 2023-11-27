@@ -32,9 +32,10 @@ public class CooperaAdminService implements AdminService{
     public Object generateInvitationLink(InvitationLinkRequest recipient) throws CooperaException {
         String memberId = generateMemberId();
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         List<String> requestList = recipient.getRecipientEmail();
         int successCount = 0;
-        String link = generateInviteLink(memberId, cooperativeId);
+        String link = generateInviteLink(memberId, coopId);
         successCount = sendInviteToRecipient(requestList, link, successCount);
         return emailSenderResponse(successCount);
     }
@@ -67,8 +68,9 @@ public class CooperaAdminService implements AdminService{
 
     private String generateMemberId(){
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         var currentSizeOfMembersPlusOne = memberService.findAllMembers().size() + 1;
-        return cooperativeId + "/" + currentSizeOfMembersPlusOne;
+        return coopId + "/" + currentSizeOfMembersPlusOne;
 
     }
 }

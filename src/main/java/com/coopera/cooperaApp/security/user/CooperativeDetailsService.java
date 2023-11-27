@@ -13,14 +13,12 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @AllArgsConstructor
-@Component
-@Primary
 public class CooperativeDetailsService implements UserDetailsService {
     private final CooperativeService cooperativeService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
        Optional<Cooperative> cooperative =  cooperativeService.findByCooperativeById(username);
-        return new CooperativeDetails(cooperative.get());
+        return cooperative.map(CooperativeDetails::new).orElse(null);
     }
 }

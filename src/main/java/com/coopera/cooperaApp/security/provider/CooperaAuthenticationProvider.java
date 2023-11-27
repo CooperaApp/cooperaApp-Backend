@@ -35,33 +35,42 @@ public class CooperaAuthenticationProvider implements AuthenticationProvider {
         Authentication authenticationResult;
         String email = authentication.getPrincipal().toString();
         String password = authentication.getCredentials().toString();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        CooperativeDetailsService cooperativedetails = new CooperativeDetailsService(cooperativeService);
-        System.out.println(email);
-      var details =   cooperativedetails.loadUserByUsername(email);
-        System.out.println(details.getUsername());
-      String cooperativeId = details.getUsername();
-      String cooperativePassword = details.getPassword();
-
-        String memberEmail = userDetails.getUsername();
-        String memberPassword = userDetails.getPassword();
-        Collection<? extends  GrantedAuthority> authorities = userDetails.getAuthorities();
-
-        if (password.equals("String")) {
-            authenticationResult = new UsernamePasswordAuthenticationToken(memberEmail, memberPassword, authorities);
-
-            return authenticationResult;
+        authenticationResult = authenticateIfAuthIsCooperative(email, password);
+        if (authenticationResult == null){
+           authenticationResult =  authenticateIfAuthIsMember(email, password);
         }
-        else {
-            authenticationResult = new UsernamePasswordAuthenticationToken(cooperativeId, cooperativePassword);
-            System.out.println(authenticationResult);
-            return authenticationResult;
-
-        }
-
+        return authenticationResult;
 
     }
 
+    private Authentication authenticateIfAuthIsMember(String principal, String password){
+    Authentication authenticationResult;
+        UserDetails userDetails = userDetailsService.loadUserByUsername(principal);
+        String memberEmail = userDetails.getUsername();
+        String memberPassword = userDetails.getPassword();
+        Collection<? extends  GrantedAuthority> authorities = userDetails.getAuthorities();
+        if (passwordEncoder.matches(password, memberPassword)) {
+            authenticationResult = new UsernamePasswordAuthenticationToken(memberEmail, memberPassword, authorities);
+            return authenticationResult;
+    }
+        return null;
+    }
+
+    private Authentication authenticateIfAuthIsCooperative(String principal, String password){
+       Authentication authenticationResult;
+        CooperativeDetailsService cooperativedetails = new CooperativeDetailsService(cooperativeService);
+        UserDetails  details =   cooperativedetails.loadUserByUsername(principal);
+        if(!(details == null)) {
+            String cooperativeId = details.getUsername();
+            String cooperativePassword = details.getPassword();
+            if (!cooperativeId.isEmpty()){
+                if(passwordEncoder.matches(password,cooperativePassword)){
+                    authenticationResult = new UsernamePasswordAuthenticationToken(cooperativeId, cooperativePassword);
+                    return authenticationResult;
+                }
+            }}
+        return null;
+    }
     @Override
     public boolean supports(Class<?> authentication) {
         if (authentication.equals(UsernamePasswordAuthenticationToken.class)) return true;

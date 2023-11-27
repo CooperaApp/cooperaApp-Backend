@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -90,10 +91,11 @@ public class CooperaMemberService implements MemberService{
         if (!checkIfAmountToSaveIsValid(saveRequest.getAmountToSave())) throw new CooperaException("Invalid Amount");
         BigDecimal amount = new BigDecimal(saveRequest.getAmountToSave());
         String memberId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        String cooperativeId = extractCooperativeIdFromMemberId(memberId);
+        String memId =memberId.substring(1, memberId.length() - 1);
+        String cooperativeId = extractCooperativeIdFromMemberId(memId);
         SavingsLog newSavingsLog = SavingsLog.builder().amountSaved(amount).
                 timeSaved(LocalDateTime.now()).
-                cooperativeName(extractCooperativeName(cooperativeId)).memberName(extractMemberName(memberId)).
+                cooperativeName(extractCooperativeName(cooperativeId)).memberName(extractMemberName(memId)).
                 memberId(memberId).cooperativeId(cooperativeId).build();
         savingsLogRepository.save(newSavingsLog);
         return SavingsResponse.builder().message("Saved Successfully").build();

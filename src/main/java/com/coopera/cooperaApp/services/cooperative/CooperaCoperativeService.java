@@ -15,6 +15,8 @@ import jakarta.validation.ValidatorFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,7 @@ import java.util.Set;
 public class CooperaCoperativeService implements CooperativeService {
     private final CooperativeRepository cooperativeRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request) throws CooperaException {
         validateRegistrationRequest(request);
@@ -42,11 +45,12 @@ public class CooperaCoperativeService implements CooperativeService {
 
     }
 
-    private static Cooperative initializeCooperativeData(RegisterCooperativeRequest request, Company company) {
+    private  Cooperative initializeCooperativeData(RegisterCooperativeRequest request, Company company) {
         Cooperative cooperative = new Cooperative();
         cooperative.setName(request.getName());
         cooperative.setLogo(request.getLogo());
         cooperative.setCompany(company);
+        cooperative.setPassword(passwordEncoder.encode(request.getPassword()));
         cooperative.setNumberOfMember(cooperative.getMembersId().size());
         cooperative.setDateCreated(LocalDateTime.now());
         return cooperative;
@@ -82,7 +86,6 @@ public class CooperaCoperativeService implements CooperativeService {
     public Optional<Cooperative> findByCooperativeById(String id) {
         return cooperativeRepository.findById(id);
     }
-
     @Override
     public void save(Cooperative cooperative) {
         cooperativeRepository.save(cooperative);
