@@ -14,6 +14,6 @@ public class Account {
 
     private String id;
     private String bankName;
-    private String accountName;
+private String accountName;
 
 }

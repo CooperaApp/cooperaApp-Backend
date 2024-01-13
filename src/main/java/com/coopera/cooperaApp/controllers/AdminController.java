@@ -26,5 +26,11 @@ public class AdminController {
 
         }
 
+    @PostMapping("/testing")
+
+    public String test(){
+        return "This is working";
+    }
+
 
     }
