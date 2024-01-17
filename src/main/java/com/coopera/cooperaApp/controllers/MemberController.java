@@ -31,7 +31,6 @@ public class MemberController {
         }
     }
     @PostMapping("/save")
-
     public ResponseEntity<ApiResponse<?>> save(@RequestBody SaveRequest saveRequest)  {
         try {
             var response =  memberService.saveToCooperative(saveRequest);

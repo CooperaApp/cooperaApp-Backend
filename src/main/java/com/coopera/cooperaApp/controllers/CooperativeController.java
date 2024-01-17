@@ -5,6 +5,7 @@ import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
 import com.coopera.cooperaApp.dtos.response.ApiResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
+import com.coopera.cooperaApp.services.member.MemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class CooperativeController {
     private final CooperativeService cooperativeService;
+    private final MemberService memberService;
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> registerCooperative(@RequestBody RegisterCooperativeRequest request) {
         try {
-            var response = cooperativeService.registerCooperative(request);
+            var response = cooperativeService.registerCooperative(request, memberService);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
                     .message("Company registration successful")
                     .success(true)

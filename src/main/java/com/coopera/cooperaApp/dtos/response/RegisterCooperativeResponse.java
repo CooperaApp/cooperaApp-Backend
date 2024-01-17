@@ -12,5 +12,5 @@ import lombok.ToString;
 public class RegisterCooperativeResponse {
     private String id;
     private String name;
-    private int numberOfMembers;
+    private Long numberOfMembers;
 }

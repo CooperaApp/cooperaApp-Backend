@@ -24,4 +24,6 @@ public interface MemberService {
     List<Member> findAllMembers();
 
     SavingsResponse saveToCooperative(SaveRequest amountToSave) throws CooperaException;
+
+    Long getNumberOfMembersByCooperativeId(String id);
 }

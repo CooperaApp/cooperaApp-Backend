@@ -1,7 +1,6 @@
 package com.coopera.cooperaApp.services.cooperative;
 
 import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
-import com.coopera.cooperaApp.dtos.response.MemberResponse;
 import com.coopera.cooperaApp.dtos.response.RegisterCooperativeResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Company;
@@ -15,7 +14,6 @@ import jakarta.validation.ValidatorFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,15 +31,23 @@ public class CooperaCoperativeService implements CooperativeService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request) throws CooperaException {
+    @Override
+    public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request, MemberService memberService) throws CooperaException {
         validateRegistrationRequest(request);
         Company company = new Company();
         modelMapper.map(request, company);
         Cooperative cooperative = initializeCooperativeData(request,  company);
         cooperative.setId(generateId(request.getName()));
+
+        System.out.println(cooperative);
+
         Cooperative savedCooperative = cooperativeRepository.save(cooperative);
         if(savedCooperative.getId() == null) throw new CooperaException("Cooperative registration failed");
-        return RegisterCooperativeResponse.builder().id(savedCooperative.getId()).name(savedCooperative.getName()).numberOfMembers(savedCooperative.getNumberOfMember()).build();
+        Long numberOfCooperativeMembers = memberService.getNumberOfMembersByCooperativeId(savedCooperative.getId());
+        return RegisterCooperativeResponse.builder()
+                .id(savedCooperative.getId())
+                .name(savedCooperative.getName())
+                .numberOfMembers(numberOfCooperativeMembers).build();
 
     }
 
@@ -51,7 +57,6 @@ public class CooperaCoperativeService implements CooperativeService {
         cooperative.setLogo(request.getLogo());
         cooperative.setCompany(company);
         cooperative.setPassword(passwordEncoder.encode(request.getPassword()));
-        cooperative.setNumberOfMember(cooperative.getMembersId().size());
         cooperative.setDateCreated(LocalDateTime.now());
         return cooperative;
     }
@@ -83,7 +88,7 @@ public class CooperaCoperativeService implements CooperativeService {
     }
 
     @Override
-    public Optional<Cooperative> findByCooperativeById(String id) {
+    public Optional<Cooperative> findById(String id) {
         return cooperativeRepository.findById(id);
     }
     @Override

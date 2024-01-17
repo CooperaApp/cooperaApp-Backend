@@ -4,15 +4,15 @@ import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
 import com.coopera.cooperaApp.dtos.response.RegisterCooperativeResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Cooperative;
-import org.springframework.stereotype.Service;
+import com.coopera.cooperaApp.services.member.MemberService;
 
 import java.util.Optional;
 
 public interface CooperativeService {
 
-    RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request) throws CooperaException;
+    RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request, MemberService memberService) throws CooperaException;
     void deleteAll();
-    Optional<Cooperative> findByCooperativeById(String id);
+    Optional<Cooperative> findById(String id);
 
     void save(Cooperative cooperative);
 
