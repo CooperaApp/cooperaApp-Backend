@@ -8,6 +8,7 @@ import com.coopera.cooperaApp.models.Loan;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.coopera.cooperaApp.services.member.MemberService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface LoanService {
@@ -24,4 +25,8 @@ public interface LoanService {
     List<Loan> findByMemberIdAndStatus(String memberId, LoanStatus loanStatus, MemberService memberService) throws CooperaException, LoanException;
 
     List<Loan> findByCooperativeIdAndStatus(String cooperativeId, LoanStatus loanStatus, CooperativeService cooperativeService) throws LoanException;
+
+    BigDecimal calculateTotalDisbursedLoan(String cooperativeId);
+
+    BigDecimal calculateTotalRepaidLoan(String cooperativeId);
 }

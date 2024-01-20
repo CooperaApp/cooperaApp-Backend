@@ -9,4 +9,5 @@ public class AppUtils {
     public static final String LOAN_NOT_FOUND = "Loan with ID %s not found";
     public static final String LOAN_REQUEST_SUBMITTED = "Loan request submitted";
     public static final String LOAN_STATUS_UPDATED = "Loan status updated";
+    public static final String DATA_RETRIEVED = "Data retrieved  successfully";
 }

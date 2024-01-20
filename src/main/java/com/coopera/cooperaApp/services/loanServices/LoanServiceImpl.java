@@ -117,4 +117,14 @@ public class LoanServiceImpl implements LoanService {
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, cooperativeId))
         );
     }
+
+    @Override
+    public BigDecimal calculateTotalDisbursedLoan(String cooperativeId) {
+        return loanRepository.calculateTotalDisbursedLoan(cooperativeId);
+    }
+
+    @Override
+    public BigDecimal calculateTotalRepaidLoan(String cooperativeId) {
+        return loanRepository.calculateTotalRepaidLoan(cooperativeId);
+    }
 }
