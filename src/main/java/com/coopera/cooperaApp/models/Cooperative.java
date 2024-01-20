@@ -27,6 +27,8 @@ public class Cooperative {
     private String logo;
     @OneToOne(cascade = CascadeType.ALL)
     private Company company;
+    @OneToOne(cascade = CascadeType.ALL)
+    private AccountingEntry accountingEntry;
     private String password;
 
 }
