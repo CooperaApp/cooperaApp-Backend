@@ -1,28 +1,31 @@
-package com.coopera.cooperaApp.models;
+package com.coopera.cooperaApp.dtos.response;
 
+import com.coopera.cooperaApp.models.Company;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-
-import lombok.AllArgsConstructor;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToOne;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class Savings {
+@Builder
+@ToString
+public class CooperativeResponse {
 
     private String id;
-    private String amount;
-    private String bank;
+    private String name;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime deductionDate;
+    private LocalDateTime dateCreated;
+    private String logo;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Company company;
 }

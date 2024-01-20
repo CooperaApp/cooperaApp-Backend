@@ -2,13 +2,18 @@ package com.coopera.cooperaApp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-@EnableMongoRepositories
+public class CooperaAppApplication extends SpringBootServletInitializer {
 
-public class CooperaAppApplication {
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application)
+	{
+		return application.sources(CooperaAppApplication.class);
+	}
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(CooperaAppApplication.class, args);

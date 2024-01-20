@@ -5,18 +5,22 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.coopera.cooperaApp.dtos.requests.EmailDetails;
 import com.coopera.cooperaApp.dtos.requests.InvitationLinkRequest;
 import com.coopera.cooperaApp.exceptions.CooperaException;
-import com.coopera.cooperaApp.security.JwtUtil;
-import com.coopera.cooperaApp.security.SecurityUtils;
+import com.coopera.cooperaApp.models.Cooperative;
 import com.coopera.cooperaApp.services.Mail.MailService;
+import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.coopera.cooperaApp.services.member.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+
+import static com.coopera.cooperaApp.utilities.AppUtils.INVITATION_MAIL_SUBJECT;
+import static com.coopera.cooperaApp.utilities.AppUtils.MEMBER_INVITATION_HTML_TEMPLATE_LOCATION;
+import static com.coopera.cooperaApp.utilities.HtmlFileUtility.getFileTemplateFromClasspath;
 
 
 @AllArgsConstructor
@@ -29,13 +33,14 @@ public class CooperaAdminService implements AdminService{
 
     public static final String JWT_SECRET = "${jwt.secret}";
     @Override
-    public Object generateInvitationLink(InvitationLinkRequest recipient) throws CooperaException {
+    public Object generateInvitationLink(InvitationLinkRequest recipient, CooperativeService cooperativeService) throws CooperaException {
         String memberId = generateMemberId();
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         List<String> requestList = recipient.getRecipientEmail();
         int successCount = 0;
-        String link = generateInviteLink(memberId, cooperativeId);
-        successCount = sendInviteToRecipient(requestList, link, successCount);
+        String link = generateInviteLink(memberId, coopId);
+        successCount = sendInviteToRecipient(requestList, link, successCount, coopId, cooperativeService);
         return emailSenderResponse(successCount);
     }
 
@@ -47,13 +52,17 @@ public class CooperaAdminService implements AdminService{
                 .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
     }
 
-    private int sendInviteToRecipient(List<String> requestList, String link, int successCount) {
+    private int sendInviteToRecipient(List<String> requestList, String link, int successCount, String coopId, CooperativeService cooperativeService) throws CooperaException {
+        System.out.println("Link::>> "+link);
         for (String recipientMail : requestList) {
+            Cooperative cooperative = cooperativeService.findById(coopId).get();
+            String template = getFileTemplateFromClasspath(MEMBER_INVITATION_HTML_TEMPLATE_LOCATION);
+            String mailBody = String.format(template, cooperative.getName(), cooperative.getCompany().getCompanyName(), link);
             EmailDetails emailDetails = new EmailDetails();
             emailDetails.setRecipient(recipientMail);
-            emailDetails.setMsgBody(link);
-            emailDetails.setSubject("Please Login with the Link Within the Hour");
-            String response = mailService.sendEmail(emailDetails);
+            emailDetails.setMsgBody(mailBody);
+            emailDetails.setSubject(String.format(INVITATION_MAIL_SUBJECT, cooperative.getName()));
+            String response = mailService.mimeMessage(emailDetails);
             if (response.equals("success")) successCount++;
         }
         return successCount;
@@ -67,8 +76,8 @@ public class CooperaAdminService implements AdminService{
 
     private String generateMemberId(){
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         var currentSizeOfMembersPlusOne = memberService.findAllMembers().size() + 1;
-        return cooperativeId + "/" + currentSizeOfMembersPlusOne;
-
+        return coopId + "/" + currentSizeOfMembersPlusOne;
     }
 }

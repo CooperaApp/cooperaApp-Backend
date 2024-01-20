@@ -1,6 +1,7 @@
 package com.coopera.cooperaApp.controllers;
 
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
+import com.coopera.cooperaApp.dtos.requests.SaveRequest;
 import com.coopera.cooperaApp.dtos.response.ApiResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.services.member.MemberService;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/member")
 @AllArgsConstructor
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     @PostMapping("/register")
 
@@ -29,4 +30,6 @@ public class MemberController {
             return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
         }
     }
+
+
 }

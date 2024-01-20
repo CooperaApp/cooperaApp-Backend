@@ -4,32 +4,29 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@Entity
 public class Cooperative {
 
+    @Id
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
     private String name;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateCreated;
-    private int numberOfMember;
     private String logo;
+    @OneToOne(cascade = CascadeType.ALL)
     private Company company;
-    private List<String> membersId = new ArrayList<>();
-   private List<PartneringCompany> partneringCompanies;
+    private String password;
 
-   private List<Investment> investments;
 }
