@@ -52,7 +52,7 @@ public class LoanController {
             @PathVariable String loanId, @PathVariable LoanStatus loanStatus
     ) {
         try {
-            Loan response = loanService.updateSavingsStatus(loanId, loanStatus);
+            Loan response = loanService.updateSavingsStatus(loanId, loanStatus, cooperativeService);
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder()
                     .message(LOAN_STATUS_UPDATED)
                     .data(response)

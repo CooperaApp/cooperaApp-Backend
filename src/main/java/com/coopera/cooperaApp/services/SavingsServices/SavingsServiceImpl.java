@@ -89,6 +89,11 @@ public class SavingsServiceImpl implements SavingsService {
         );
     }
 
+    @Override
+    public BigDecimal calculateTotalCooperativeSavings(String cooperativeId) {
+        return savingsLogRepository.calculateTotalCooperativeSavings(cooperativeId);
+    }
+
 
     private String extractMemberName(String id, MemberService memberService) throws CooperaException {
         var response = memberService.findById(id);

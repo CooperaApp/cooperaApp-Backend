@@ -8,6 +8,7 @@ import com.coopera.cooperaApp.models.SavingsLog;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.coopera.cooperaApp.services.member.MemberService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface SavingsService {
@@ -25,4 +26,7 @@ public interface SavingsService {
     List<SavingsLog> findByMemberIdAndStatus(String memberId, SavingsStatus savingsStatus, MemberService memberService) throws CooperaException;
 
     List<SavingsLog> findByCooperativeIdAndStatus(String cooperativeId, SavingsStatus savingsStatus, CooperativeService cooperativeService) throws CooperaException;
+
+    BigDecimal calculateTotalCooperativeSavings(String cooperativeId);
+
 }
