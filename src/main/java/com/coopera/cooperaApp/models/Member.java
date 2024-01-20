@@ -17,7 +17,6 @@ import java.util.List;
 public class Member {
     @Id
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String cooperativeId;
     private String firstName;

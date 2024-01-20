@@ -1,5 +1,6 @@
 package com.coopera.cooperaApp.models;
 
+import com.coopera.cooperaApp.enums.SavingsStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,8 +17,6 @@ public class SavingsLog {
     @Id
     private Integer id;
 
-    private String cooperativeName;
-
     private String cooperativeId;
 
     private BigDecimal amountSaved;
@@ -27,5 +26,6 @@ public class SavingsLog {
     private String memberName;
 
     private String memberId;
+    private SavingsStatus savingsStatus;
 
 }

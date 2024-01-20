@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/member")
 @AllArgsConstructor
 public class MemberController {
-    private MemberService memberService;
+    private final MemberService memberService;
 
     @PostMapping("/register")
 
@@ -30,17 +30,6 @@ public class MemberController {
             return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
         }
     }
-    @PostMapping("/save")
-    public ResponseEntity<ApiResponse<?>> save(@RequestBody SaveRequest saveRequest)  {
-        try {
-            var response =  memberService.saveToCooperative(saveRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
-                    message(response.getMessage()).data(response).success(true).build());
-        } catch (CooperaException e) {
-            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
-        }
-    }
-
 
 
 }

@@ -53,6 +53,7 @@ public class CooperaAdminService implements AdminService{
     }
 
     private int sendInviteToRecipient(List<String> requestList, String link, int successCount, String coopId, CooperativeService cooperativeService) throws CooperaException {
+        System.out.println("Link::>> "+link);
         for (String recipientMail : requestList) {
             Cooperative cooperative = cooperativeService.findById(coopId).get();
             String template = getFileTemplateFromClasspath(MEMBER_INVITATION_HTML_TEMPLATE_LOCATION);

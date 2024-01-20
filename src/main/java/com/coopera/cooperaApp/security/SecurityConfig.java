@@ -1,6 +1,7 @@
 package com.coopera.cooperaApp.security;
 
 import com.coopera.cooperaApp.enums.Role;
+import com.coopera.cooperaApp.exceptions.exceptionHandlers.CustomAuthenticationFailureHandler;
 import com.coopera.cooperaApp.security.filter.CooperaAuthenticationFilter;
 import com.coopera.cooperaApp.security.filter.CooperaAuthorizationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationManager authenticationManager;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final JwtUtil jwtUtil;
 
@@ -34,6 +36,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authorizationFilter, CooperaAuthenticationFilter.class)
+                .exceptionHandling(
+                        exceptionHandler -> exceptionHandler
+                                .authenticationEntryPoint(customAuthenticationFailureHandler::onAuthenticationFailure)
+                )
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/cooperative/register", "/api/v1/admin/generateLink", "/api/v1/admin/testing","/api/v1/member/save","api/v1/member/register").permitAll())
                 .build();

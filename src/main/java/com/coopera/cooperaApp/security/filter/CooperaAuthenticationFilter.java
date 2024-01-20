@@ -43,8 +43,6 @@ public class CooperaAuthenticationFilter extends UsernamePasswordAuthenticationF
     private final JwtUtil jwtUtil;
 
 
-
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -58,7 +56,6 @@ public class CooperaAuthenticationFilter extends UsernamePasswordAuthenticationF
         } catch (IOException exception) {
             throw new BadCredentialsException(BADCREDENTIALSEXCEPTION);
         }
-
     }
 
     @SneakyThrows
@@ -67,14 +64,13 @@ public class CooperaAuthenticationFilter extends UsernamePasswordAuthenticationF
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException {
-            String accessToken = jwtUtil.generateAccessToken(email);
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("access_token", accessToken);
-          //  String email = (String) authResult.getPrincipal();
-            response.setContentType(APPLICATION_JSON_VALUE);
-            response.getOutputStream().write(objectMapper.writeValueAsBytes(
-                    responseData ));
-
+        String accessToken = jwtUtil.generateAccessToken(email);
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("access_token", accessToken);
+        //  String email = (String) authResult.getPrincipal();
+        response.setContentType(APPLICATION_JSON_VALUE);
+        response.getOutputStream().write(objectMapper.writeValueAsBytes(
+                responseData));
     }
 
 }
