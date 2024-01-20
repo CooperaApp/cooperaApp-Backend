@@ -13,7 +13,7 @@ import java.util.List;
 public interface LoanService {
     Loan requestLoan(LoanRequest loanRequest, MemberService memberService) throws CooperaException;
 
-    Loan updateSavingsStatus(String loanId, LoanStatus loanStatus) throws LoanException;
+    Loan updateSavingsStatus(String loanId, LoanStatus loanStatus, CooperativeService cooperativeService) throws LoanException;
 
     Loan findById(String loanId) throws LoanException;
 

@@ -15,7 +15,7 @@ public class AccountingEntry {
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private Long interestRate;
+    private Double interestRate;
     private Long loanEligibilityRate;
 
 }

@@ -37,6 +37,9 @@ public class Loan {
     private LocalDateTime dateApproved;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime dateRejected;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dueDate;
     @OneToOne(cascade = CascadeType.ALL)
     private LoanDuration loanDuration;
