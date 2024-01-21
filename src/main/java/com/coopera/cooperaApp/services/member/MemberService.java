@@ -21,6 +21,8 @@ public interface MemberService {
 
     MemberResponse findById(String memberId) throws CooperaException;
 
+    Member findMemberById(String memberId) throws CooperaException;
+
     List<Member> findAllMembers();
 
 

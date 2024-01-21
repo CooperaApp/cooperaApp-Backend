@@ -3,23 +3,30 @@ package com.coopera.cooperaApp.services.loanServices;
 import com.coopera.cooperaApp.dtos.requests.LoanRequest;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
 import com.coopera.cooperaApp.enums.DurationPeriodType;
+import com.coopera.cooperaApp.enums.EndorsementResponse;
 import com.coopera.cooperaApp.enums.LoanStatus;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.exceptions.LoanException;
 import com.coopera.cooperaApp.models.Cooperative;
+import com.coopera.cooperaApp.models.EndorsementRequest;
 import com.coopera.cooperaApp.models.Loan;
+import com.coopera.cooperaApp.models.Member;
 import com.coopera.cooperaApp.repositories.LoanRepository;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.coopera.cooperaApp.services.member.MemberService;
+import com.coopera.cooperaApp.utilities.AppUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.AssertTrue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
@@ -32,7 +39,10 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Loan requestLoan(LoanRequest loanRequest, MemberService memberService) throws CooperaException {
         String memberId = retrieveMemberId();
-        MemberResponse foundMember = memberService.findById(memberId);
+        MemberResponse foundMemberResponse = memberService.findById(memberId);
+        Member foundMember = memberService.findMemberById(memberId);
+        boolean isEligible =  checkMemberEligibility(foundMember);
+        if (!isEligible) throw new CooperaException("You are not Eligible for this loan");
         Loan loan;
         try {
             loan = objectMapper.readValue(objectMapper.writeValueAsString(loanRequest), Loan.class);
@@ -41,10 +51,22 @@ public class LoanServiceImpl implements LoanService {
         }
         loan.setCooperativeId(foundMember.getCooperativeId());
         loan.setMemberId(memberId);
-        loan.setMemberName(foundMember.getName());
+        loan.setMemberName(foundMemberResponse.getName());
         return loanRepository.save(loan);
     }
 
+
+    private boolean checkMemberEligibility(Member member){
+        boolean checkIfProperlyEndorsed = false;
+        boolean eligibleByAmount = member.getBalance().compareTo(balanceRequiredToEndorse) > 0;
+        List<EndorsementRequest> endorsementRequests = member.getEndorsements();
+        long numberOfAcceptedEndorsements = endorsementRequests.stream()
+                .filter(request -> request.getEndorsementResponse() == EndorsementResponse.ACCEPT)
+                .count();
+        if (numberOfAcceptedEndorsements >= 2) checkIfProperlyEndorsed = true;
+        return checkIfProperlyEndorsed && eligibleByAmount;
+
+    }
     @Override
     public Loan updateSavingsStatus(String loanId, LoanStatus loanStatus, CooperativeService cooperativeService) throws LoanException {
         Loan foundLoan = findById(loanId);

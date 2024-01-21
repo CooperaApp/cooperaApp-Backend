@@ -18,15 +18,10 @@ public class SavingsLog {
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
     private String cooperativeId;
-
     private BigDecimal amountSaved;
-
     private LocalDateTime timeSaved;
-
     private String memberName;
-
     private String memberId;
     private SavingsStatus savingsStatus;
 

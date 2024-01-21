@@ -80,6 +80,11 @@ public class CooperaMemberService implements MemberService {
     }
 
     @Override
+    public Member findMemberById(String memberId) throws CooperaException {
+        return memberRepository.findById(memberId).orElseThrow(() -> new CooperaException("Member Not Found"));
+    }
+
+    @Override
     public List<Member> findAllMembers() {
         return memberRepository.findAll();
     }

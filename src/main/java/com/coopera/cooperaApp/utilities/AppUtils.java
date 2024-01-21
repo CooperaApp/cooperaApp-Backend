@@ -2,6 +2,8 @@ package com.coopera.cooperaApp.utilities;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.math.BigDecimal;
+
 public class AppUtils {
     public static final String MEMBER_INVITATION_HTML_TEMPLATE_LOCATION = "/memberInvitationTemplate.txt";
     public static final String INVITATION_MAIL_SUBJECT = "Invitation to Join %s";
@@ -13,6 +15,8 @@ public class AppUtils {
     public static final String LOAN_STATUS_UPDATED = "Loan status updated";
     public static final String DATA_RETRIEVED = "Data retrieved successfully";
     public static final String SAVINGS_POSTED = "Savings posted successfully";
+
+    public static final BigDecimal balanceRequiredToEndorse = BigDecimal.valueOf(50_000L);
     public static final String INTEREST_CANNOT_BE_CALCULATED = "Interest cannot be calculated. Please, update the cooperative's interest rate";
 
     public static String retrieveCooperativeId(){
