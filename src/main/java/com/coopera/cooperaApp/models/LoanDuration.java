@@ -1,6 +1,6 @@
 package com.coopera.cooperaApp.models;
 
-import com.coopera.cooperaApp.enums.DurationType;
+import com.coopera.cooperaApp.enums.DurationPeriodType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class LoanDuration {
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private Long duration;
-    private DurationType durationType;
+    private Long period;
+    private DurationPeriodType durationPeriodType;
 
 }

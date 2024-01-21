@@ -19,7 +19,7 @@ public interface CooperativeService {
 
     void save(Cooperative cooperative);
 
-    CooperativeDashboardStatistic getDashboardStatistics(String cooperativeId, SavingsService savingsService, LoanService loanService);
+    CooperativeDashboardStatistic getDashboardStatistics(SavingsService savingsService, LoanService loanService);
 }
 
 

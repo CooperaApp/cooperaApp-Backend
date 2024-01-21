@@ -128,4 +128,5 @@ public class CooperaMemberService implements MemberService {
         return JWT.require(Algorithm.HMAC512(JWT_SECRET.getBytes()))
                 .build().verify(token);
     }
+
 }

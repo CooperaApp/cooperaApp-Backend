@@ -41,9 +41,9 @@ public class CooperativeController {
         }
     }
 
-    @GetMapping("/getDashboardStatistics/{cooperativeId}")
-    public ResponseEntity<?> getDashboardStatistics(@PathVariable String cooperativeId) throws CooperaException {
-        CooperativeDashboardStatistic response = cooperativeService.getDashboardStatistics(cooperativeId, savingsService, loanService);
+    @GetMapping("/getDashboardStatistics")
+    public ResponseEntity<?> getDashboardStatistics() {
+        CooperativeDashboardStatistic response = cooperativeService.getDashboardStatistics(savingsService, loanService);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
                 .message(DATA_RETRIEVED)
                 .success(true)

@@ -31,4 +31,9 @@ public class Cooperative {
     private AccountingEntry accountingEntry;
     private String password;
 
+    @PrePersist
+    public void prePersist(){
+        accountingEntry = new AccountingEntry();
+    }
+
 }

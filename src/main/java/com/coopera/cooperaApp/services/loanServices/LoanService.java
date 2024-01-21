@@ -18,13 +18,13 @@ public interface LoanService {
 
     Loan findById(String loanId) throws LoanException;
 
-    List<Loan> findByMemberId(String memberId, MemberService memberService) throws CooperaException, LoanException;
+    List<Loan> findByMemberId(MemberService memberService) throws CooperaException, LoanException;
 
-    List<Loan> findByCooperativeId(String cooperativeId, CooperativeService cooperativeService) throws LoanException;
+    List<Loan> findByCooperativeId(CooperativeService cooperativeService) throws LoanException;
 
-    List<Loan> findByMemberIdAndStatus(String memberId, LoanStatus loanStatus, MemberService memberService) throws CooperaException, LoanException;
+    List<Loan> findByMemberIdAndStatus(LoanStatus loanStatus, MemberService memberService) throws CooperaException, LoanException;
 
-    List<Loan> findByCooperativeIdAndStatus(String cooperativeId, LoanStatus loanStatus, CooperativeService cooperativeService) throws LoanException;
+    List<Loan> findByCooperativeIdAndStatus(LoanStatus loanStatus, CooperativeService cooperativeService) throws LoanException;
 
     BigDecimal calculateTotalDisbursedLoan(String cooperativeId);
 
