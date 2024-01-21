@@ -13,19 +13,19 @@ import java.util.List;
 
 public interface SavingsService {
 
-    SavingsResponse saveToCooperative(SaveRequest amountToSave, MemberService memberService) throws CooperaException;
+    SavingsLog saveToCooperative(SaveRequest amountToSave, MemberService memberService) throws CooperaException;
 
     SavingsLog findById(Integer savingsId) throws CooperaException;
 
-    List<SavingsLog> findByMemberId(String memberId, MemberService memberService) throws CooperaException;
+    List<SavingsLog> findByMemberId(MemberService memberService) throws CooperaException;
 
-    List<SavingsLog> findByCooperativeId(String cooperativeId, CooperativeService cooperativeService) throws CooperaException;
+    List<SavingsLog> findByCooperativeId(CooperativeService cooperativeService) throws CooperaException;
 
     SavingsLog updateSavingsStatus(String savingsId, SavingsStatus savingsStatus) throws CooperaException;
 
-    List<SavingsLog> findByMemberIdAndStatus(String memberId, SavingsStatus savingsStatus, MemberService memberService) throws CooperaException;
+    List<SavingsLog> findByMemberIdAndStatus(SavingsStatus savingsStatus, MemberService memberService) throws CooperaException;
 
-    List<SavingsLog> findByCooperativeIdAndStatus(String cooperativeId, SavingsStatus savingsStatus, CooperativeService cooperativeService) throws CooperaException;
+    List<SavingsLog> findByCooperativeIdAndStatus(SavingsStatus savingsStatus, CooperativeService cooperativeService) throws CooperaException;
 
     BigDecimal calculateTotalCooperativeSavings(String cooperativeId);
 

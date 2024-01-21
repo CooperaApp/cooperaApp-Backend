@@ -1,33 +1,27 @@
-package com.coopera.cooperaApp.models;
+package com.coopera.cooperaApp.dtos.response;
 
 import com.coopera.cooperaApp.enums.LoanStatus;
+import com.coopera.cooperaApp.models.LoanDuration;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-public class Loan {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+@Getter
+@ToString
+public class LoanResponse {
     private String id;
-    private String memberId;
     private String memberName;
-    private String cooperativeId;
     private String description;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -41,15 +35,8 @@ public class Loan {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dueDate;
-    @OneToOne(cascade = CascadeType.ALL)
     private LoanDuration loanDuration;
     private LoanStatus loanStatus;
     private BigDecimal repaymentAmount;
     private BigDecimal amount;
-
-    @PrePersist
-    void prePersist(){
-        loanStatus = LoanStatus.PENDING;
-        dateRequested = LocalDateTime.now();
-    }
 }

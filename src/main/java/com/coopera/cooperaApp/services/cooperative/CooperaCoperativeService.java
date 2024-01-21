@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.coopera.cooperaApp.utilities.AppUtils.retrieveCooperativeId;
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -101,7 +103,10 @@ public class CooperaCoperativeService implements CooperativeService {
     }
 
     @Override
-    public CooperativeDashboardStatistic getDashboardStatistics(String cooperativeId, SavingsService savingsService, LoanService loanService) {
+    public CooperativeDashboardStatistic getDashboardStatistics(SavingsService savingsService, LoanService loanService) {
+        System.out.println("Reached");
+        String cooperativeId = retrieveCooperativeId();
+        System.out.println("cooperativeId::>> "+cooperativeId);
         CooperativeDashboardStatistic cooperativeDashboardStatistic = new CooperativeDashboardStatistic();
         BigDecimal totalCooperativeSavings = savingsService.calculateTotalCooperativeSavings(cooperativeId);
         BigDecimal totalDisbursedLoan = loanService.calculateTotalDisbursedLoan(cooperativeId);

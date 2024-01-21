@@ -2,7 +2,7 @@ package com.coopera.cooperaApp.services.loanServices;
 
 import com.coopera.cooperaApp.dtos.requests.LoanRequest;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
-import com.coopera.cooperaApp.enums.DurationType;
+import com.coopera.cooperaApp.enums.DurationPeriodType;
 import com.coopera.cooperaApp.enums.LoanStatus;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.exceptions.LoanException;
@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.coopera.cooperaApp.utilities.AppUtils.LOAN_NOT_FOUND;
+import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,8 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Loan requestLoan(LoanRequest loanRequest, MemberService memberService) throws CooperaException {
-        MemberResponse foundMember = memberService.findById(loanRequest.getMemberId());
+        String memberId = retrieveMemberId();
+        MemberResponse foundMember = memberService.findById(memberId);
         Loan loan;
         try {
             loan = objectMapper.readValue(objectMapper.writeValueAsString(loanRequest), Loan.class);
@@ -39,6 +40,8 @@ public class LoanServiceImpl implements LoanService {
             throw new CooperaException(e.getMessage());
         }
         loan.setCooperativeId(foundMember.getCooperativeId());
+        loan.setMemberId(memberId);
+        loan.setMemberName(foundMember.getName());
         return loanRepository.save(loan);
     }
 
@@ -49,6 +52,10 @@ public class LoanServiceImpl implements LoanService {
         if (loanStatus.equals(LoanStatus.ONGOING)) {
             processLoanDueDate(foundLoan);
             Cooperative cooperative = cooperativeService.findById(foundLoan.getCooperativeId()).get();
+            Double interestRate = cooperative.getAccountingEntry().getInterestRate();
+            if (interestRate == null || interestRate == 0 || interestRate < 0){
+                throw new LoanException(INTEREST_CANNOT_BE_CALCULATED);
+            }
             BigDecimal repaymentAmount = calculateRepaymentAmount(foundLoan, cooperative.getAccountingEntry().getInterestRate());
             foundLoan.setRepaymentAmount(repaymentAmount);
         } else if (loanStatus.equals(LoanStatus.REJECTED)) {
@@ -59,14 +66,14 @@ public class LoanServiceImpl implements LoanService {
 
     private static void processLoanDueDate(Loan foundLoan) {
         foundLoan.setDateApproved(LocalDateTime.now());
-        if (foundLoan.getLoanDuration().getDurationType().equals(DurationType.DAY)) {
-            LocalDateTime dueDate = foundLoan.getDateApproved().plusDays(foundLoan.getLoanDuration().getDuration());
+        if (foundLoan.getLoanDuration().getDurationPeriodType().equals(DurationPeriodType.DAY)) {
+            LocalDateTime dueDate = foundLoan.getDateApproved().plusDays(foundLoan.getLoanDuration().getPeriod());
             foundLoan.setDueDate(dueDate);
-        } else if (foundLoan.getLoanDuration().getDurationType().equals(DurationType.MONTH)) {
-            LocalDateTime dueDate = foundLoan.getDateApproved().plusMonths(foundLoan.getLoanDuration().getDuration());
+        } else if (foundLoan.getLoanDuration().getDurationPeriodType().equals(DurationPeriodType.MONTH)) {
+            LocalDateTime dueDate = foundLoan.getDateApproved().plusMonths(foundLoan.getLoanDuration().getPeriod());
             foundLoan.setDueDate(dueDate);
-        } else if (foundLoan.getLoanDuration().getDurationType().equals(DurationType.YEAR)) {
-            LocalDateTime dueDate = foundLoan.getDateApproved().plusYears(foundLoan.getLoanDuration().getDuration());
+        } else if (foundLoan.getLoanDuration().getDurationPeriodType().equals(DurationPeriodType.YEAR)) {
+            LocalDateTime dueDate = foundLoan.getDateApproved().plusYears(foundLoan.getLoanDuration().getPeriod());
             foundLoan.setDueDate(dueDate);
         }
     }
@@ -86,8 +93,8 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<Loan> findByMemberId(String memberId, MemberService memberService) throws CooperaException, LoanException {
-        memberService.findById(memberId);
+    public List<Loan> findByMemberId(MemberService memberService) throws CooperaException, LoanException {
+        String memberId = retrieveMemberId();
         return loanRepository.findAllByMemberId(memberId).orElseThrow(
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, memberId))
         );
@@ -95,7 +102,8 @@ public class LoanServiceImpl implements LoanService {
 
 
     @Override
-    public List<Loan> findByCooperativeId(String cooperativeId, CooperativeService cooperativeService) throws LoanException {
+    public List<Loan> findByCooperativeId(CooperativeService cooperativeService) throws LoanException {
+        String cooperativeId = retrieveCooperativeId();
         cooperativeService.findById(cooperativeId);
         return loanRepository.findAllByCooperativeId(cooperativeId).orElseThrow(
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, cooperativeService))
@@ -103,7 +111,8 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<Loan> findByMemberIdAndStatus(String memberId, LoanStatus loanStatus, MemberService memberService) throws CooperaException, LoanException {
+    public List<Loan> findByMemberIdAndStatus(LoanStatus loanStatus, MemberService memberService) throws CooperaException, LoanException {
+        String memberId = retrieveMemberId();
         memberService.findById(memberId);
         return loanRepository.findAllByMemberIdAndLoanStatus(memberId, loanStatus).orElseThrow(
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, memberId))
@@ -111,20 +120,23 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<Loan> findByCooperativeIdAndStatus(String cooperativeId, LoanStatus loanStatus, CooperativeService cooperativeService) throws LoanException {
+    public List<Loan> findByCooperativeIdAndStatus(LoanStatus loanStatus, CooperativeService cooperativeService) throws LoanException {
+        String cooperativeId = retrieveCooperativeId();
         cooperativeService.findById(cooperativeId);
-        return loanRepository.findAllByMemberIdAndLoanStatus(cooperativeId, loanStatus).orElseThrow(
+        return loanRepository.findAllByCooperativeIdAndLoanStatus(cooperativeId, loanStatus).orElseThrow(
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, cooperativeId))
         );
     }
 
     @Override
     public BigDecimal calculateTotalDisbursedLoan(String cooperativeId) {
-        return loanRepository.calculateTotalDisbursedLoan(cooperativeId);
+        BigDecimal totalDisbursedLoan = loanRepository.calculateTotalDisbursedLoan(cooperativeId);
+        return totalDisbursedLoan == null ? BigDecimal.ZERO : totalDisbursedLoan;
     }
 
     @Override
     public BigDecimal calculateTotalRepaidLoan(String cooperativeId) {
-        return loanRepository.calculateTotalRepaidLoan(cooperativeId);
+        BigDecimal totalRepaidLoan = loanRepository.calculateTotalRepaidLoan(cooperativeId);
+        return totalRepaidLoan == null ? BigDecimal.ZERO : totalRepaidLoan;
     }
 }

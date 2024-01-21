@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 @Entity
+@ToString
 public class Member {
     @Id
     @Column(name = "id", columnDefinition = "VARCHAR(50)")

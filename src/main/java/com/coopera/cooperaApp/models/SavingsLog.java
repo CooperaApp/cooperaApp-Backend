@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SavingsLog {
     @Id
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String cooperativeId;
