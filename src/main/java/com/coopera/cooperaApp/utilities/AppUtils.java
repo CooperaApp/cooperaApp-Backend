@@ -16,6 +16,8 @@ public class AppUtils {
     public static final String DATA_RETRIEVED = "Data retrieved successfully";
     public static final String SAVINGS_POSTED = "Savings posted successfully";
 
+    public static final String NOT_ELIGIBLE_FOR_LOAN  = "You are not Eligible for this loan";
+
     public static final BigDecimal balanceRequiredToEndorse = BigDecimal.valueOf(50_000L);
     public static final String INTEREST_CANNOT_BE_CALCULATED = "Interest cannot be calculated. Please, update the cooperative's interest rate";
 

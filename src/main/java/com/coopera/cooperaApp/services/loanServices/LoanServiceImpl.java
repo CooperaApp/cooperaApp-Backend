@@ -42,7 +42,7 @@ public class LoanServiceImpl implements LoanService {
         MemberResponse foundMemberResponse = memberService.findById(memberId);
         Member foundMember = memberService.findMemberById(memberId);
         boolean isEligible =  checkMemberEligibility(foundMember);
-        if (!isEligible) throw new CooperaException("You are not Eligible for this loan");
+        if (!isEligible) throw new CooperaException(NOT_ELIGIBLE_FOR_LOAN);
         Loan loan;
         try {
             loan = objectMapper.readValue(objectMapper.writeValueAsString(loanRequest), Loan.class);

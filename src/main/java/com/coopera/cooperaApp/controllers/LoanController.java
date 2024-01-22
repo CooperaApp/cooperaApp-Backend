@@ -12,6 +12,7 @@ import com.coopera.cooperaApp.models.Loan;
 import com.coopera.cooperaApp.models.SavingsLog;
 import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
+import com.coopera.cooperaApp.services.loanServices.LoanEligibility;
 import com.coopera.cooperaApp.services.loanServices.LoanService;
 import com.coopera.cooperaApp.services.member.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,6 +37,7 @@ public class LoanController {
     private final MemberService memberService;
     private final CooperativeService cooperativeService;
     private final ObjectMapper objectMapper;
+    private final LoanEligibility loanEligibility;
 
     @PostMapping("requestLoan")
     public ResponseEntity<ApiResponse<?>> save(@RequestBody LoanRequest loanRequest) {
@@ -140,4 +142,78 @@ public class LoanController {
             return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
         }
     }
+
+    @PostMapping("endorseMember/{endorsementRequestId}")
+    public ResponseEntity<ApiResponse<?>> endorseMember(@PathVariable String endorsementRequestId){
+        try {
+            var response =  loanEligibility.endorseMember(endorsementRequestId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message(response).data("").success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+    @PostMapping("rejectMember/{endorsementRequestId}")
+    public ResponseEntity<ApiResponse<?>> rejectMember(@PathVariable String endorsementRequestId){
+        try {
+            var response =  loanEligibility.rejectMember(endorsementRequestId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message(response).data("").success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+    @PostMapping("sendEndorsementRequest")
+    public ResponseEntity<ApiResponse<?>> endorseMember(@RequestBody LoanRequest loanRequest, @RequestBody String endorsementEmail){
+        try {
+            var response =  loanEligibility.sendEndorsementRequest(loanRequest, endorsementEmail);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message(response).data("").success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+    @PostMapping("findAllPendingEndorsementRequests")
+    public ResponseEntity<ApiResponse<?>> findAllPendingEndorsementRequests(){
+        try {
+            var response =  loanEligibility.findAllPendingEndorsementRequest();
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message("").data(response).success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+
+
+    @PostMapping("findAllAcceptedEndorsementRequests")
+    public ResponseEntity<ApiResponse<?>> findAllAcceptedEndorsementRequests(){
+        try {
+            var response =  loanEligibility.findAllAcceptedEndorsementRequest();
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message("").data(response).success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+
+    @PostMapping("findAllRejectedEndorsementRequests")
+    public ResponseEntity<ApiResponse<?>> findAlRejectedEndorsementRequests(){
+        try {
+            var response =  loanEligibility.findAllRejectedEndorsementRequest();
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message("").data(response).success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+
+
+
+
 }
