@@ -2,6 +2,7 @@ package com.coopera.cooperaApp.models;
 
 import com.coopera.cooperaApp.enums.PartneringCategory;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,9 +13,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class PartneringCompany {
-
-    private  String id;
+    @Id
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+    private String cooperativeId;
     private String name;
     private String rcNumber;
     private PartneringCategory partneringCategory;

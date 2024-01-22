@@ -43,7 +43,6 @@ public class CooperaAuthorizationFilter extends OncePerRequestFilter {
             }
         }
     }
-
     private void authorizeRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, CooperaException {
         authorize(request);
         filterChain.doFilter(request, response);
@@ -65,10 +64,11 @@ public class CooperaAuthorizationFilter extends OncePerRequestFilter {
     private void authorizeToken(String token) throws CooperaException {
         Map<String, Claim> map = jwtUtil.extractClaimsFromToken(token);
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        Claim roles = map.get("Roles");
+       // Claim roles = map.get("Roles");
         Claim id = map.get("id");
+        System.out.println("this is the ID " + id);
 
-        addClaimToUserAuthorities(authorities, roles);
+      //  addClaimToUserAuthorities(authorities, roles);
         Authentication authentication = new UsernamePasswordAuthenticationToken(id, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

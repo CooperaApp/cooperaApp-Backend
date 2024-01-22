@@ -1,22 +1,25 @@
 package com.coopera.cooperaApp.models;
 
 import com.coopera.cooperaApp.enums.Role;
+import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document
 @Getter
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
+@Entity
+@ToString
 public class Member {
-
+    @Id
+    @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
+    private String cooperativeId;
     private String firstName;
     private String lastName;
     private String department;
@@ -24,16 +27,12 @@ public class Member {
     private String photo;
     private String position;
     private String email;
-  //  @Enumerated(EnumType.STRING)
-    private List<Role> roles  = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
     private String password;
     private String phoneNumber;
-  //  @OneToMany
- //   @JoinColumn(name = "savings_id")
-    private List<Savings> savings;
- //   @OneToOne
+    @OneToOne
     private Account account;
- //   @OneToOne
+    @OneToOne
     private Loan loan;
     private BigDecimal balance;
 }

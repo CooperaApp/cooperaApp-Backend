@@ -52,7 +52,7 @@ public class CooperaMailService implements MailService{
             helper.setSubject(emailDetails.getSubject());
             helper.setText(emailDetails.getMsgBody(), true);
             javaMailSender.send(mimeMessage);
-            return "Sent";
+            return "success";
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }

@@ -7,6 +7,7 @@ import com.coopera.cooperaApp.dtos.response.RegisterCooperativeResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.services.cooperative.CooperaCoperativeService;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
+import com.coopera.cooperaApp.services.member.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,23 @@ public class CooperativeServiceTest {
 
     @Autowired
     private  CooperaCoperativeService cooperaCoperativeService;
+    @Autowired
+    private MemberService memberService;
     private RegisterCooperativeResponse response;
 
     @BeforeEach
     public void setUp() throws CooperaException {
         cooperativeService.deleteAll();
+
+        RegisterMemberRequest member = new RegisterMemberRequest();
+        member.setEmail("speaktoyin@gmail.com");
+        member.setPosition("President");
+        member.setPassword("Tinuade1");
+        member.setFirstName("Tinu");
+        member.setLastName("Ade");
+        member.setPhoneNumber("08138732503");
        var registrationRequest= getRegisterCooperativeRequest();
-        response = cooperativeService.registerCooperative(registrationRequest);
+        response = cooperativeService.registerCooperative(registrationRequest, memberService);
     }
 
     @Test

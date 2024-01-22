@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.coopera.cooperaApp.dtos.requests.EmailDetails;
 import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
+import com.coopera.cooperaApp.dtos.CooperativeDashboardStatistic;
 import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
 import com.coopera.cooperaApp.dtos.response.RegisterCooperativeResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
@@ -13,6 +14,9 @@ import com.coopera.cooperaApp.models.Company;
 import com.coopera.cooperaApp.models.Cooperative;
 import com.coopera.cooperaApp.repositories.CooperativeRepository;
 import com.coopera.cooperaApp.services.Mail.MailService;
+import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
+import com.coopera.cooperaApp.services.loanServices.LoanService;
+import com.coopera.cooperaApp.services.member.MemberService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -22,12 +26,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.Instant;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.*;
+
+import static com.coopera.cooperaApp.utilities.AppUtils.retrieveCooperativeId;
 
 @Service
 @AllArgsConstructor
@@ -40,26 +46,34 @@ public class CooperaCoperativeService implements CooperativeService {
     private PasswordEncoder passwordEncoder;
 
 
-    public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request) throws CooperaException {
+    @Override
+    public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request, MemberService memberService) throws CooperaException {
         validateRegistrationRequest(request);
         if(cooperativeRepository.findByEmail(request.getEmail()) != null) throw new CooperaException("Cooperative with eamil "+request.getEmail()+ " already exists");
         Company company = new Company();
         modelMapper.map(request, company);
         Cooperative cooperative = initializeCooperativeData(request,  company);
         cooperative.setId(generateId(request.getName()));
+
+        System.out.println(cooperative);
+
         Cooperative savedCooperative = cooperativeRepository.save(cooperative);
         if(savedCooperative.getId() == null) throw new CooperaException("Cooperative registration failed");
-        return RegisterCooperativeResponse.builder().id(savedCooperative.getId()).name(savedCooperative.getName()).numberOfMembers(savedCooperative.getNumberOfMember()).build();
+        Long numberOfCooperativeMembers = memberService.getNumberOfMembersByCooperativeId(savedCooperative.getId());
+        return RegisterCooperativeResponse.builder()
+                .id(savedCooperative.getId())
+                .name(savedCooperative.getName())
+                .numberOfMembers(numberOfCooperativeMembers).build();
 
     }
 
-    private static Cooperative initializeCooperativeData(RegisterCooperativeRequest request, Company company) {
+    private  Cooperative initializeCooperativeData(RegisterCooperativeRequest request, Company company) {
         Cooperative cooperative = new Cooperative();
         cooperative.setEmail(request.getEmail());
         cooperative.setName(request.getName());
         cooperative.setLogo(request.getLogo());
         cooperative.setCompany(company);
-        cooperative.setNumberOfMember(cooperative.getMembersId().size());
+        cooperative.setPassword(passwordEncoder.encode(request.getPassword()));
         cooperative.setDateCreated(LocalDateTime.now());
         return cooperative;
     }
@@ -91,10 +105,9 @@ public class CooperaCoperativeService implements CooperativeService {
     }
 
     @Override
-    public Optional<Cooperative> findByCooperativeById(String id) {
+    public Optional<Cooperative> findById(String id) {
         return cooperativeRepository.findById(id);
     }
-
     @Override
     public Cooperative findCooperativeByMail(String mail) {
         return cooperativeRepository.findByEmail(mail);
@@ -139,5 +152,29 @@ public class CooperaCoperativeService implements CooperativeService {
         cooperative.setPassword(passwordEncoder.encode(newPassword));
         cooperativeRepository.save(cooperative);
         return PASSWORD_RESET;
+    }
+
+    @Override
+    public CooperativeDashboardStatistic getDashboardStatistics(SavingsService savingsService, LoanService loanService) {
+        System.out.println("Reached");
+        String cooperativeId = retrieveCooperativeId();
+        System.out.println("cooperativeId::>> "+cooperativeId);
+        CooperativeDashboardStatistic cooperativeDashboardStatistic = new CooperativeDashboardStatistic();
+        BigDecimal totalCooperativeSavings = savingsService.calculateTotalCooperativeSavings(cooperativeId);
+        BigDecimal totalDisbursedLoan = loanService.calculateTotalDisbursedLoan(cooperativeId);
+        BigDecimal accountBalance = totalCooperativeSavings.subtract(totalDisbursedLoan);
+        cooperativeDashboardStatistic.setAccountBalance(accountBalance);
+        cooperativeDashboardStatistic.setLoanDisbursed(totalDisbursedLoan);
+        cooperativeDashboardStatistic.setTotalSavings(totalCooperativeSavings);
+        BigDecimal totalRepaidLoan = loanService.calculateTotalRepaidLoan(cooperativeId);
+        cooperativeDashboardStatistic.setLoanRepaid(totalRepaidLoan);
+        return cooperativeDashboardStatistic;
+    }
+
+    private BigDecimal calculateCooperativeAccountBalance(String cooperativeId, SavingsService savingsService, LoanService loanService) {
+        BigDecimal totalCooperativeSavings = savingsService.calculateTotalCooperativeSavings(cooperativeId);
+        BigDecimal totalDisbursedLoan = loanService.calculateTotalDisbursedLoan(cooperativeId);
+        return null;
+
     }
 }

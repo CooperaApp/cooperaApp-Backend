@@ -1,11 +1,14 @@
 package com.coopera.cooperaApp.services.member;
 
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
+import com.coopera.cooperaApp.dtos.requests.SaveRequest;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
+import com.coopera.cooperaApp.dtos.response.SavingsResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Member;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface MemberService {
@@ -19,4 +22,7 @@ public interface MemberService {
     MemberResponse findById(String memberId) throws CooperaException;
 
     List<Member> findAllMembers();
+
+
+    Long getNumberOfMembersByCooperativeId(String id);
 }

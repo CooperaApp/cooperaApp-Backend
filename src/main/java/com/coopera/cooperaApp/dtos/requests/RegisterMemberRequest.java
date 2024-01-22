@@ -35,5 +35,6 @@ public class RegisterMemberRequest {
     private String phoneNumber;
 
     private String token;
+    private String cooperativeId;
 
 }

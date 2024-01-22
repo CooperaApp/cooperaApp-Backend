@@ -29,5 +29,7 @@ public class RegisterCooperativeRequest {
     @NotBlank(message = "Company address is required.")
     private String address;
 
+    private String password;
+
 
 }

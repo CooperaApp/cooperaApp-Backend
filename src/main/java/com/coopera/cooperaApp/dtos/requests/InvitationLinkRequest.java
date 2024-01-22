@@ -13,6 +13,4 @@ public class InvitationLinkRequest {
 
     private List<String> recipientEmail;
 
-
-
 }

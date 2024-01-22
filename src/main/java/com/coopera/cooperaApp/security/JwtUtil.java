@@ -39,17 +39,16 @@ public class JwtUtil {
         return verifier.verify(token);
     }
 
-    public String generateAccessToken(Member member, Role role) {
-        List<Role> listOfCurrentUserRoles = member.getRoles();
-        listOfCurrentUserRoles.add(role);
-        Map<String, String> map = new HashMap<>();
-        int number = 1;
-        for (int i = 0; i < listOfCurrentUserRoles.size(); i++) {
-            map.put("role"+number, listOfCurrentUserRoles.toArray()[i].toString());
-            number++;
-        }
+    public String generateAccessToken(String id) {
+//        roles.add(newRole);
+//        Map<String, String> map = new HashMap<>();
+//        int number = 1;
+//        for (int i = 0; i < roles.size(); i++) {
+//            map.put("role"+number, roles.toArray()[i].toString());
+//            number++;
+//        }
         return JWT.create().withIssuedAt(Instant.now()).withExpiresAt(Instant.now().plusSeconds(86000L)).
-                withClaim("Roles", map).withClaim("userId", member.getId()).sign(Algorithm.HMAC512(secret.getBytes()));
+                withClaim("id", id).sign(Algorithm.HMAC512(secret.getBytes()));
     }
 
 }
