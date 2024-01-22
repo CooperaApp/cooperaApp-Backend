@@ -24,7 +24,7 @@ public class MemberController {
         try {
             var response =  memberService.registerMember(registerMemberRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
-                    message("Member successfuly Created").data(response).success(true).build());
+                    message("Member successfuly Created").data(response).status(true).build());
         } catch (CooperaException e) {
             return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
         }

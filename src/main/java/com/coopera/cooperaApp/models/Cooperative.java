@@ -22,6 +22,8 @@ public class Cooperative {
 
     private String id;
     private String name;
+    private String email;
+    private String password;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateCreated;

@@ -1,5 +1,6 @@
 package com.coopera.cooperaApp.services.cooperative;
 
+import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
 import com.coopera.cooperaApp.dtos.response.RegisterCooperativeResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
@@ -13,7 +14,9 @@ public interface CooperativeService {
     RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request) throws CooperaException;
     void deleteAll();
     Optional<Cooperative> findByCooperativeById(String id);
-
+    Cooperative findCooperativeByMail(String mail);
+    Object forgotPassword(String email) throws CooperaException;
+    String resetPassword(PasswordResetRequest passwordResetRequest) throws CooperaException;
     void save(Cooperative cooperative);
 
 }

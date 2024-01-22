@@ -1,6 +1,8 @@
 
 package com.coopera.cooperaApp.controllers;
 
+import com.coopera.cooperaApp.dtos.requests.ForgotPasswordRequest;
+import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
 import com.coopera.cooperaApp.dtos.response.ApiResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
@@ -24,13 +26,45 @@ public class CooperativeController {
             var response = cooperativeService.registerCooperative(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
                     .message("Company registration successful")
-                    .success(true)
+                    .status(true)
                     .data(response)
                     .build());
         } catch (CooperaException e) {
             return ResponseEntity.badRequest().body(ApiResponse.builder()
                     .message(e.getMessage())
-                    .success(false)
+                    .status(false)
+                    .build());
+        }
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassWord(@RequestBody ForgotPasswordRequest request){
+        try {
+            var response = cooperativeService.forgotPassword(request.getEmail());
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
+                    .message("Account verification mail successful")
+                    .status(true)
+                    .data(response)
+                    .build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .message(e.getMessage())
+                    .status(false)
+                    .build());
+        }
+    }
+    @PostMapping
+    public ResponseEntity<?> resetPassWord(@RequestBody PasswordResetRequest passwordResetRequest){
+        try {
+            var response = cooperativeService.resetPassword(passwordResetRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
+                    .message("Password Reset successfully")
+                    .status(true)
+                    .data(response)
+                    .build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .message(e.getMessage())
+                    .status(false)
                     .build());
         }
     }
