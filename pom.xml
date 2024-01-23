@@ -86,7 +86,6 @@
     </dependencies>
 
     <build>
-        <finalName>coopera</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
