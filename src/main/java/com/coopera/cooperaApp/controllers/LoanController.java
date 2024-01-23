@@ -165,16 +165,6 @@ public class LoanController {
         }
     }
 
-    @PostMapping("sendEndorsementRequest")
-    public ResponseEntity<ApiResponse<?>> endorseMember(@RequestBody LoanRequest loanRequest, @RequestBody String endorsementEmail){
-        try {
-            var response =  loanEligibility.sendEndorsementRequest(loanRequest, endorsementEmail);
-            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
-                    message(response).data("").success(true).build());
-        } catch (CooperaException e) {
-            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
-        }
-    }
 
     @PostMapping("findAllPendingEndorsementRequests")
     public ResponseEntity<ApiResponse<?>> findAllPendingEndorsementRequests(){

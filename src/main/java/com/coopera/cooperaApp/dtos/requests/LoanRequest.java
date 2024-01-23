@@ -20,4 +20,6 @@ public class LoanRequest {
     private String description;
     private LoanDuration loanDuration;
     private BigDecimal amount;
+    private String firstEndorserId;
+    private String secondEndorserId;
 }

@@ -7,7 +7,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -36,6 +35,4 @@ public class Member {
     @OneToOne
     private Loan loan;
     private BigDecimal balance;
-    @OneToMany
-    private List<EndorsementRequest> endorsements;
 }

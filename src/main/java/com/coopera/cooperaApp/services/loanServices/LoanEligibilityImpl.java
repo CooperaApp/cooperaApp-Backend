@@ -1,50 +1,52 @@
 package com.coopera.cooperaApp.services.loanServices;
 
 import com.coopera.cooperaApp.dtos.requests.LoanRequest;
-import com.coopera.cooperaApp.enums.EndorsementResponse;
+import com.coopera.cooperaApp.enums.EndorsementStatus;
 import com.coopera.cooperaApp.exceptions.CooperaException;
-import com.coopera.cooperaApp.models.EndorsementRequest;
+import com.coopera.cooperaApp.models.Endorsement;
 import com.coopera.cooperaApp.models.Member;
 import com.coopera.cooperaApp.repositories.EndorsementRepository;
-import com.coopera.cooperaApp.repositories.LoanRepository;
 import com.coopera.cooperaApp.services.member.MemberService;
 import com.coopera.cooperaApp.utilities.AppUtils;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class LoanEligibilityImpl implements LoanEligibility{
 
-    private EndorsementRepository endorsementRepository;
+    private final EndorsementRepository endorsementRepository;
 
-    private MemberService memberService;
+    private final MemberService memberService;
 
 
     @Override
     public String endorseMember(String endorsementRequestId) throws CooperaException {
-        String endorserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String endorserId = AppUtils.retrieveMemberId();
         Member endorser = memberService.findMemberById(endorserId);
         if (checkIfEndorserIsEligible(endorser)){
-        EndorsementRequest foundEndorsementRequest = endorsementRepository.findById(endorsementRequestId).
+        Endorsement foundEndorsement = endorsementRepository.findById(endorsementRequestId).
                 orElseThrow(() -> new CooperaException("Not found"));
-        foundEndorsementRequest.setEndorsementResponse(EndorsementResponse.ACCEPT);
-        endorsementRepository.save(foundEndorsementRequest);
+        foundEndorsement.setEndorsementStatus(EndorsementStatus.ACCEPT);
+        endorsementRepository.save(foundEndorsement);
         }
         return "You have successfully endorsed this member";
     }
 
     @Override
     public String rejectMember(String endorsementRequestId) throws CooperaException {
-        String endorserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String endorserId = AppUtils.retrieveMemberId();
         Member endorser = memberService.findMemberById(endorserId);
         if (checkIfEndorserIsEligible(endorser)){
-            EndorsementRequest foundEndorsementRequest = endorsementRepository.findById(endorsementRequestId).
+            Endorsement foundEndorsement = endorsementRepository.findById(endorsementRequestId).
                     orElseThrow(() -> new CooperaException("Not found"));
-            foundEndorsementRequest.setEndorsementResponse(EndorsementResponse.REJECT);
-            endorsementRepository.save(foundEndorsementRequest);
+            foundEndorsement.setEndorsementStatus(EndorsementStatus.REJECT);
+            endorsementRepository.save(foundEndorsement);
         }
         return "You have successfully rejected this member";
     }
@@ -54,44 +56,40 @@ public class LoanEligibilityImpl implements LoanEligibility{
     }
 
     @Override
-    public String sendEndorsementRequest(LoanRequest loanRequest, String endorserEmail) throws CooperaException {
-        String endorseeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    public Endorsement sendEndorsementRequest(String endorserId) throws CooperaException {
+        String endorseeId = AppUtils.retrieveMemberId();
         Member requester = memberService.findMemberById(endorseeId);
-        Member endorser = memberService.findMemberById(endorserEmail);
-        EndorsementRequest endorsementRequest = EndorsementRequest.builder().
+        Member endorser = memberService.findMemberById(endorserId);
+        log.info("THis is the IDs" + endorserId);
+        Endorsement endorsement = Endorsement.builder().
                 endorserEmail(endorser.getEmail()).
-                loanRequest(loanRequest).
-                requesterName(requester.getFirstName() + " " + requester.getLastName()).
                 requesterEmail(requester.getEmail()).
-                requesterPhoto(requester.getPhoto()).
-                requesterDepartment(requester.getDepartment()).
-                requesterPhoneNumber(requester.getPhoneNumber()).build();
-        endorsementRepository.save(endorsementRequest);
+                build();
         //Notify by email
-        return "Endorsement Sent Successfully";
+        return endorsementRepository.save(endorsement);
     }
 
     @Override
-    public List<EndorsementRequest> findAllPendingEndorsementRequest() throws CooperaException {
-        String endorserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    public List<Endorsement> findAllPendingEndorsementRequest() throws CooperaException {
+        String endorserId = AppUtils.retrieveMemberId();
         Member member = memberService.findMemberById(endorserId);
         var endorsements = endorsementRepository.getEndorsementRequestByEndorserEmail(member.getEmail()); 
-       return endorsements.stream().filter(request -> request.getEndorsementResponse() == EndorsementResponse.PENDING).toList();
+       return endorsements.stream().filter(request -> request.getEndorsementStatus() == EndorsementStatus.PENDING).toList();
     }
 
     @Override
-    public List<EndorsementRequest> findAllAcceptedEndorsementRequest() throws CooperaException {
-        String endorserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    public List<Endorsement> findAllAcceptedEndorsementRequest() throws CooperaException {
+        String endorserId = AppUtils.retrieveMemberId();
         Member member = memberService.findMemberById(endorserId);
         var endorsements = endorsementRepository.getEndorsementRequestByEndorserEmail(member.getEmail());
-        return endorsements.stream().filter(request -> request.getEndorsementResponse() == EndorsementResponse.ACCEPT).toList();
+        return endorsements.stream().filter(request -> request.getEndorsementStatus() == EndorsementStatus.ACCEPT).toList();
     }
 
     @Override
-    public List<EndorsementRequest> findAllRejectedEndorsementRequest() throws CooperaException {
+    public List<Endorsement> findAllRejectedEndorsementRequest() throws CooperaException {
         String endorserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Member member = memberService.findMemberById(endorserId);
         var endorsements = endorsementRepository.getEndorsementRequestByEndorserEmail(member.getEmail());
-        return endorsements.stream().filter(request -> request.getEndorsementResponse() == EndorsementResponse.REJECT).toList();
+        return endorsements.stream().filter(request -> request.getEndorsementStatus() == EndorsementStatus.REJECT).toList();
     }
 }
