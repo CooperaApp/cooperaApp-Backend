@@ -1,6 +1,7 @@
 package com.coopera.cooperaApp.dtos.response;
 
 import com.coopera.cooperaApp.enums.LoanStatus;
+import com.coopera.cooperaApp.models.Endorsement;
 import com.coopera.cooperaApp.models.LoanDuration;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,6 +16,8 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -36,6 +39,8 @@ public class LoanResponse {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dueDate;
     private LoanDuration loanDuration;
+
+    private List<Endorsement> endorsement = new ArrayList<>();
     private LoanStatus loanStatus;
     private BigDecimal repaymentAmount;
     private BigDecimal amount;

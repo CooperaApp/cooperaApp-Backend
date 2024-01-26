@@ -34,7 +34,6 @@ public class CooperaAuthenticationProvider implements AuthenticationProvider {
             authenticationResult = authenticateIfAuthIsMember(email, password);
         }
         return authenticationResult;
-
     }
 
     private Authentication authenticateIfAuthIsMember(String principal, String password) {

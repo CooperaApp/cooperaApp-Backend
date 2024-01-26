@@ -34,6 +34,7 @@ public class CooperaAdminService implements AdminService{
     public static final String JWT_SECRET = "${jwt.secret}";
     @Override
     public Object generateInvitationLink(InvitationLinkRequest recipient, CooperativeService cooperativeService) throws CooperaException {
+        System.out.println("I reach here");
         String memberId = generateMemberId();
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
@@ -50,6 +51,13 @@ public class CooperaAdminService implements AdminService{
                 withClaim("cooperativeId", cooperativeId).
                 withExpiresAt(Instant.now().plusSeconds(864000L))
                 .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
+    }
+
+    public static void main(String[] args) {
+        for (int i = 5; i <7; i++) {
+            System.out.println(generateInviteLink("Abb/2024/0011/"+i, "Abb/2024/0011"));
+
+        }
     }
 
     private int sendInviteToRecipient(List<String> requestList, String link, int successCount, String coopId, CooperativeService cooperativeService) throws CooperaException {

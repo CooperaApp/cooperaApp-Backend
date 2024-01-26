@@ -11,6 +11,10 @@ public class RegisterCooperativeRequest {
     @NotBlank(message = "Cooperative name is required.")
     private String name;
 
+
+    @NotBlank(message = "Email is required.")
+    private String email;
+
     @NotBlank
     private String logo;
 

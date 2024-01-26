@@ -41,11 +41,18 @@ class CooperaAppApplicationTests {
 		}
     }
     @Test
+    void member() throws JsonProcessingException {
+		for (var each:memberRepository.findAll()) {
+			System.out.println(each);
+		}
+    }
+    @Test
     void memberTest() {
 
 		int count = 1;
 		for (var each:loanRepository.findAll()) {
 			if (each.getMemberName() == null){
+
 				if (each.getId().equalsIgnoreCase("Sam/2024/001/2")){
 					System.out.println(count++);
 					each.setMemberName("Amuludun Inumiodun");

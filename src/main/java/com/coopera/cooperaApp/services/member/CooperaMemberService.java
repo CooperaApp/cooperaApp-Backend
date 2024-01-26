@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.coopera.cooperaApp.utilities.AppUtils.retrieveCooperativeId;
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -88,9 +90,11 @@ public class CooperaMemberService implements MemberService {
     }
 
     @Override
-    public List<MemberResponse> findAllMembers(int page, int items) {
+    public List<MemberResponse> findAllMembersByCooperativeId(int page, int items) {
+        String cooperativeId = retrieveCooperativeId();
         Pageable pageable = AppUtils.buildPageRequest(page, items);
-        Page<Member> memberPage = memberRepository.findAll(pageable);
+        System.out.println("Items::>> "+items);
+        Page<Member> memberPage = memberRepository.findAllByCooperativeId(cooperativeId, pageable);
         List<Member> members = memberPage.getContent();
         return members.stream().map(CooperaMemberService::buildMemberResponse).toList(); }
 

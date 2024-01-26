@@ -10,24 +10,26 @@ import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.coopera.cooperaApp.security.SecurityUtils.JWT_SECRET;
+
 @AllArgsConstructor
 public class JwtUtil {
 
     @Value(JWT_SECRET)
     private String secret;
 
-    public  Map<String, Claim> extractClaimsFromToken(String token) throws CooperaException {
+    public Map<String, Claim> extractClaimsFromToken(String token) throws CooperaException {
         DecodedJWT decodedJwt = validateToken(token);
         return decodedJwt.getClaims();
     }
 
-    private DecodedJWT validateToken(String token){
+    private DecodedJWT validateToken(String token) {
         return JWT.require(Algorithm.HMAC512(secret.getBytes()))
                 .build().verify(token);
     }
@@ -47,8 +49,15 @@ public class JwtUtil {
 //            map.put("role"+number, roles.toArray()[i].toString());
 //            number++;
 //        }
-        return JWT.create().withIssuedAt(Instant.now()).withExpiresAt(Instant.now().plusSeconds(86000L)).
-                withClaim("id", id).sign(Algorithm.HMAC512(secret.getBytes()));
+        return JWT
+                .create()
+                .withIssuedAt(Instant.now())
+                .withExpiresAt(
+                        Instant.now()
+                        .plusSeconds(86000L)
+                )
+                .withClaim("id", id)
+                .sign(Algorithm.HMAC512(secret.getBytes()));
     }
 
 }
