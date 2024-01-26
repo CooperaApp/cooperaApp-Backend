@@ -12,6 +12,7 @@ import com.coopera.cooperaApp.models.Loan;
 import com.coopera.cooperaApp.models.SavingsLog;
 import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
+import com.coopera.cooperaApp.services.loanServices.LoanEligibility;
 import com.coopera.cooperaApp.services.loanServices.LoanService;
 import com.coopera.cooperaApp.services.member.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,6 +37,7 @@ public class LoanController {
     private final MemberService memberService;
     private final CooperativeService cooperativeService;
     private final ObjectMapper objectMapper;
+    private final LoanEligibility loanEligibility;
 
     @PostMapping("requestLoan")
     public ResponseEntity<ApiResponse<?>> save(@RequestBody LoanRequest loanRequest) {
@@ -140,4 +142,68 @@ public class LoanController {
             return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
         }
     }
+
+    @PostMapping("endorseMember/{endorsementRequestId}")
+    public ResponseEntity<ApiResponse<?>> endorseMember(@PathVariable String endorsementRequestId){
+        try {
+            var response =  loanEligibility.endorseMember(endorsementRequestId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message(response).data("").success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+    @PostMapping("rejectMember/{endorsementRequestId}")
+    public ResponseEntity<ApiResponse<?>> rejectMember(@PathVariable String endorsementRequestId){
+        try {
+            var response =  loanEligibility.rejectMember(endorsementRequestId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message(response).data("").success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+
+    @PostMapping("findAllPendingEndorsementRequests/{page}/{items}")
+    public ResponseEntity<ApiResponse<?>> findAllPendingEndorsementRequests(@PathVariable int page, @PathVariable int items){
+        try {
+            var response =  loanEligibility.findAllPendingEndorsementRequest(page, items);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message("").data(response).success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+
+
+    @PostMapping("findAllAcceptedEndorsementRequests/{page}/{items}")
+    public ResponseEntity<ApiResponse<?>> findAllAcceptedEndorsementRequests(@PathVariable int page, @PathVariable int items){
+        try {
+            var response =  loanEligibility.findAllAcceptedEndorsementRequest(page, items);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message("").data(response).success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+
+    @PostMapping("findAllRejectedEndorsementRequests/{page}/{items}")
+    public ResponseEntity<ApiResponse<?>> findAlRejectedEndorsementRequests(@PathVariable int page, @PathVariable int items){
+        try {
+            var response =  loanEligibility.findAllRejectedEndorsementRequest(page, items);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
+                    message("").data(response).success(true).build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
+        }
+    }
+
+
+
+
+
 }

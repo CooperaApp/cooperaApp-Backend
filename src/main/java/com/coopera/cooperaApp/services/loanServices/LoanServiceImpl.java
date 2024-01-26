@@ -3,11 +3,14 @@ package com.coopera.cooperaApp.services.loanServices;
 import com.coopera.cooperaApp.dtos.requests.LoanRequest;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
 import com.coopera.cooperaApp.enums.DurationPeriodType;
+import com.coopera.cooperaApp.enums.EndorsementStatus;
 import com.coopera.cooperaApp.enums.LoanStatus;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.exceptions.LoanException;
 import com.coopera.cooperaApp.models.Cooperative;
+import com.coopera.cooperaApp.models.Endorsement;
 import com.coopera.cooperaApp.models.Loan;
+import com.coopera.cooperaApp.models.Member;
 import com.coopera.cooperaApp.repositories.LoanRepository;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.coopera.cooperaApp.services.member.MemberService;
@@ -28,11 +31,15 @@ import static com.coopera.cooperaApp.utilities.AppUtils.*;
 public class LoanServiceImpl implements LoanService {
     private final ObjectMapper objectMapper;
     private final LoanRepository loanRepository;
+    private final LoanEligibility loaneligibility;
 
     @Override
     public Loan requestLoan(LoanRequest loanRequest, MemberService memberService) throws CooperaException {
         String memberId = retrieveMemberId();
-        MemberResponse foundMember = memberService.findById(memberId);
+        MemberResponse foundMemberResponse = memberService.findById(memberId);
+        Member foundMember = memberService.findMemberById(memberId);
+        Endorsement firstEndorsement = loaneligibility.sendEndorsementRequest(loanRequest.getFirstEndorserId());
+        Endorsement secondEndorsement = loaneligibility.sendEndorsementRequest(loanRequest.getSecondEndorserId());
         Loan loan;
         try {
             loan = objectMapper.readValue(objectMapper.writeValueAsString(loanRequest), Loan.class);
@@ -41,7 +48,9 @@ public class LoanServiceImpl implements LoanService {
         }
         loan.setCooperativeId(foundMember.getCooperativeId());
         loan.setMemberId(memberId);
-        loan.setMemberName(foundMember.getName());
+        loan.setMemberName(foundMemberResponse.getName());
+        loan.setEndorsement(List.of(firstEndorsement, secondEndorsement));
+        System.out.println(loan.getEndorsement().size());
         return loanRepository.save(loan);
     }
 
