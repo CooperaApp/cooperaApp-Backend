@@ -36,8 +36,9 @@ public class LoanEligibilityImpl implements LoanEligibility{
                 orElseThrow(() -> new CooperaException("Not found"));
         foundEndorsement.setEndorsementStatus(EndorsementStatus.ACCEPT);
         endorsementRepository.save(foundEndorsement);
+            return "You have successfully endorsed this member";
         }
-        return "You have successfully endorsed this member";
+       return "You are not eligible to endorse";
     }
 
     @Override
