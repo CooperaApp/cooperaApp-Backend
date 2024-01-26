@@ -36,8 +36,9 @@ public class LoanEligibilityImpl implements LoanEligibility{
                 orElseThrow(() -> new CooperaException("Not found"));
         foundEndorsement.setEndorsementStatus(EndorsementStatus.ACCEPT);
         endorsementRepository.save(foundEndorsement);
+            return "You have successfully endorsed this member";
         }
-        return "You have successfully endorsed this member";
+       return "You are not eligible to endorse";
     }
 
     @Override
@@ -75,6 +76,7 @@ public class LoanEligibilityImpl implements LoanEligibility{
     public List<Endorsement> findAllPendingEndorsementRequest(int page, int items) throws CooperaException {
         String endorserId = AppUtils.retrieveMemberId();
         Member member = memberService.findMemberById(endorserId);
+        System.out.println(member.getEmail() + "this is the member email");
         Pageable pageable = AppUtils.buildPageRequest(page, items);
         Page<Endorsement> endorsements = endorsementRepository.findEndorsementByEndorserEmailAndEndorsementStatus(member.getEmail(), EndorsementStatus.PENDING, pageable);
         List<Endorsement> endorsementList = endorsements.getContent();
