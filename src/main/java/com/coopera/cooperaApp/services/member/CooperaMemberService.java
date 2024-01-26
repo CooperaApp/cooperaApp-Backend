@@ -17,8 +17,11 @@ import com.coopera.cooperaApp.models.SavingsLog;
 import com.coopera.cooperaApp.repositories.MemberRepository;
 import com.coopera.cooperaApp.repositories.SavingsLogRepository;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
+import com.coopera.cooperaApp.utilities.AppUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -85,10 +88,16 @@ public class CooperaMemberService implements MemberService {
     }
 
     @Override
-    public List<Member> findAllMembers() {
+    public List<MemberResponse> findAllMembers(int page, int items) {
+        Pageable pageable = AppUtils.buildPageRequest(page, items);
+        Page<Member> memberPage = memberRepository.findAll(pageable);
+        List<Member> members = memberPage.getContent();
+        return members.stream().map(CooperaMemberService::buildMemberResponse).toList(); }
+
+    @Override
+    public List<Member> findAllMembersWithoutPagination() {
         return memberRepository.findAll();
     }
-
 
     @Override
     public Long getNumberOfMembersByCooperativeId(String cooperativeId) {
@@ -132,6 +141,16 @@ public class CooperaMemberService implements MemberService {
     private DecodedJWT validateToken(String token) {
         return JWT.require(Algorithm.HMAC512(JWT_SECRET.getBytes()))
                 .build().verify(token);
+    }
+
+    private static MemberResponse buildMemberResponse(Member member){
+        return MemberResponse.builder().email(member.getEmail())
+                .photo(member.getPhoto())
+                .firstName(member.getFirstName())
+                .lastName(member.getLastName())
+                .department(member.getDepartment())
+                .position(member.getPosition())
+                .id(member.getId()).build();
     }
 
 }

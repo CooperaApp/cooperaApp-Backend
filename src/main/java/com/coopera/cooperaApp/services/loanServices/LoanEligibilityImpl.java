@@ -10,6 +10,8 @@ import com.coopera.cooperaApp.services.member.MemberService;
 import com.coopera.cooperaApp.utilities.AppUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -70,26 +72,32 @@ public class LoanEligibilityImpl implements LoanEligibility{
     }
 
     @Override
-    public List<Endorsement> findAllPendingEndorsementRequest() throws CooperaException {
+    public List<Endorsement> findAllPendingEndorsementRequest(int page, int items) throws CooperaException {
         String endorserId = AppUtils.retrieveMemberId();
         Member member = memberService.findMemberById(endorserId);
-        var endorsements = endorsementRepository.getEndorsementRequestByEndorserEmail(member.getEmail()); 
-       return endorsements.stream().filter(request -> request.getEndorsementStatus() == EndorsementStatus.PENDING).toList();
+        Pageable pageable = AppUtils.buildPageRequest(page, items);
+        Page<Endorsement> endorsements = endorsementRepository.findEndorsementByEndorserEmailAndEndorsementStatus(member.getEmail(), EndorsementStatus.PENDING, pageable);
+        List<Endorsement> endorsementList = endorsements.getContent();
+       return endorsementList.stream().toList();
     }
 
     @Override
-    public List<Endorsement> findAllAcceptedEndorsementRequest() throws CooperaException {
+    public List<Endorsement> findAllAcceptedEndorsementRequest(int page, int items) throws CooperaException {
         String endorserId = AppUtils.retrieveMemberId();
         Member member = memberService.findMemberById(endorserId);
-        var endorsements = endorsementRepository.getEndorsementRequestByEndorserEmail(member.getEmail());
-        return endorsements.stream().filter(request -> request.getEndorsementStatus() == EndorsementStatus.ACCEPT).toList();
+        Pageable pageable = AppUtils.buildPageRequest(page, items);
+        Page<Endorsement> endorsements = endorsementRepository.findEndorsementByEndorserEmailAndEndorsementStatus(member.getEmail(), EndorsementStatus.ACCEPT, pageable);
+        List<Endorsement> endorsementList = endorsements.getContent();
+        return endorsementList.stream().toList();
     }
 
     @Override
-    public List<Endorsement> findAllRejectedEndorsementRequest() throws CooperaException {
+    public List<Endorsement> findAllRejectedEndorsementRequest(int page, int items) throws CooperaException {
         String endorserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Member member = memberService.findMemberById(endorserId);
-        var endorsements = endorsementRepository.getEndorsementRequestByEndorserEmail(member.getEmail());
-        return endorsements.stream().filter(request -> request.getEndorsementStatus() == EndorsementStatus.REJECT).toList();
+        Pageable pageable = AppUtils.buildPageRequest(page, items);
+        Page<Endorsement> endorsements = endorsementRepository.findEndorsementByEndorserEmailAndEndorsementStatus(member.getEmail(), EndorsementStatus.REJECT, pageable);
+        List<Endorsement> endorsementList = endorsements.getContent();
+        return endorsementList.stream().toList();
     }
 }

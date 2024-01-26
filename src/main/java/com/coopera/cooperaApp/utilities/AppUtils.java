@@ -1,5 +1,7 @@
 package com.coopera.cooperaApp.utilities;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
@@ -47,5 +49,12 @@ public class AppUtils {
             else cooID.append(newId[i]).append("/");
         }
         return cooID.toString();
+    }
+
+    public static Pageable buildPageRequest(int page, int items){
+        if (page<=1) page=1;
+        if (items<=0) items = 10;
+        page-=1;
+        return PageRequest.of(page, items);
     }
 }

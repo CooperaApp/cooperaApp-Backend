@@ -14,12 +14,12 @@ public interface LoanEligibility {
 
     Endorsement sendEndorsementRequest(String endorserId) throws CooperaException;
 
-    List<Endorsement> findAllPendingEndorsementRequest() throws CooperaException;
+    List<Endorsement> findAllPendingEndorsementRequest(int page, int items) throws CooperaException;
 
-    List<Endorsement> findAllAcceptedEndorsementRequest() throws CooperaException;
+    List<Endorsement> findAllAcceptedEndorsementRequest(int page, int items) throws CooperaException;
 
 
-    List<Endorsement> findAllRejectedEndorsementRequest() throws CooperaException;
+    List<Endorsement> findAllRejectedEndorsementRequest(int page, int items) throws CooperaException;
 
 
 

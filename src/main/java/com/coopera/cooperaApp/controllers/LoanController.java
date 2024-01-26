@@ -166,10 +166,10 @@ public class LoanController {
     }
 
 
-    @PostMapping("findAllPendingEndorsementRequests")
-    public ResponseEntity<ApiResponse<?>> findAllPendingEndorsementRequests(){
+    @PostMapping("findAllPendingEndorsementRequests/{page}/{items}")
+    public ResponseEntity<ApiResponse<?>> findAllPendingEndorsementRequests(@PathVariable int page, @PathVariable int items){
         try {
-            var response =  loanEligibility.findAllPendingEndorsementRequest();
+            var response =  loanEligibility.findAllPendingEndorsementRequest(page, items);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
                     message("").data(response).success(true).build());
         } catch (CooperaException e) {
@@ -179,10 +179,10 @@ public class LoanController {
 
 
 
-    @PostMapping("findAllAcceptedEndorsementRequests")
-    public ResponseEntity<ApiResponse<?>> findAllAcceptedEndorsementRequests(){
+    @PostMapping("findAllAcceptedEndorsementRequests/{page}/{items}")
+    public ResponseEntity<ApiResponse<?>> findAllAcceptedEndorsementRequests(@PathVariable int page, @PathVariable int items){
         try {
-            var response =  loanEligibility.findAllAcceptedEndorsementRequest();
+            var response =  loanEligibility.findAllAcceptedEndorsementRequest(page, items);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
                     message("").data(response).success(true).build());
         } catch (CooperaException e) {
@@ -191,10 +191,10 @@ public class LoanController {
     }
 
 
-    @PostMapping("findAllRejectedEndorsementRequests")
-    public ResponseEntity<ApiResponse<?>> findAlRejectedEndorsementRequests(){
+    @PostMapping("findAllRejectedEndorsementRequests/{page}/{items}")
+    public ResponseEntity<ApiResponse<?>> findAlRejectedEndorsementRequests(@PathVariable int page, @PathVariable int items){
         try {
-            var response =  loanEligibility.findAllRejectedEndorsementRequest();
+            var response =  loanEligibility.findAllRejectedEndorsementRequest(page, items);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder().
                     message("").data(response).success(true).build());
         } catch (CooperaException e) {
