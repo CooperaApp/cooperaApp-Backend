@@ -15,7 +15,7 @@ public class RegisterCooperativeRequest {
     @NotBlank
     private String logo;
 
-    @NotBlank
+    @NotBlank(message = "Cooperative email is required.")
     @Email
     private String email;
 

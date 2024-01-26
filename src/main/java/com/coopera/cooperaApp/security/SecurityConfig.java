@@ -41,16 +41,12 @@ public class SecurityConfig {
                                 .authenticationEntryPoint(customAuthenticationFailureHandler::onAuthenticationFailure)
                 )
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-<<<<<<< HEAD
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/cooperative/*", "/api/v1/admin/generateLink", "api/v1/member/register").permitAll())
-=======
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/v1/cooperative/register", "/api/v1/admin/generateLink", "/api/v1/admin/testing", "/api/v1/member/save", "api/v1/member/register")
                         .permitAll()
                         .anyRequest()
                         .authenticated()
                 )
->>>>>>> 668b3a9198399db04ff9069835e9cb75a5f12cf2
                 .build();
     }
 

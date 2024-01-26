@@ -4,30 +4,31 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.coopera.cooperaApp.dtos.requests.EmailDetails;
+import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
-import com.coopera.cooperaApp.dtos.requests.SaveRequest;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
-import com.coopera.cooperaApp.dtos.response.SavingsResponse;
 import com.coopera.cooperaApp.enums.Role;
-import com.coopera.cooperaApp.enums.SavingsStatus;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Cooperative;
 import com.coopera.cooperaApp.models.Member;
-import com.coopera.cooperaApp.models.SavingsLog;
 import com.coopera.cooperaApp.repositories.MemberRepository;
-import com.coopera.cooperaApp.repositories.SavingsLogRepository;
+import com.coopera.cooperaApp.security.JwtUtil;
+import com.coopera.cooperaApp.services.Mail.MailService;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+
+import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
 @Service
 @AllArgsConstructor
@@ -36,8 +37,9 @@ public class CooperaMemberService implements MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
     private final CooperativeService cooperativeService;
-    public static final String JWT_SECRET = "${jwt.secret}";
+    public final JwtUtil jwtUtil;
 
     public MemberResponse registerMember(RegisterMemberRequest request) throws CooperaException {
         Map<String, Claim> claims = extractClaimsFromToken(request.getToken());
@@ -125,8 +127,43 @@ public class CooperaMemberService implements MemberService {
     }
 
     private DecodedJWT validateToken(String token) {
-        return JWT.require(Algorithm.HMAC512(JWT_SECRET.getBytes()))
+        return JWT.require(Algorithm.HMAC512(jwtUtil.getSecret().getBytes()))
                 .build().verify(token);
     }
+    @Override
+    public String forgotMemberPassword(String email) throws CooperaException {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if (member.isEmpty()) {
+            throw new CooperaException(String.format(INVALID_MEMBER_EMAIL, email));
+        }
+        EmailDetails emailDetails = new EmailDetails();
+        emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT);
+        emailDetails.setRecipient(member.get().getEmail());
+        emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT, member.get().getFirstName(), generateLink(member.get().getId())));
+        return mailService.sendEmail(emailDetails);
+    }
+    private  String generateLink(String memberId) {
+        return FRONTEND_URL+"reset-password?token=" +
+                JWT.create()
+                        .withIssuedAt(Instant.now())
+                        .withClaim("memberId", memberId)
+                        .withExpiresAt(Instant.now().plusSeconds(600L))
+                        .sign(Algorithm.HMAC512(jwtUtil.getSecret().getBytes()));
+    }
 
+    public String resetPassword(PasswordResetRequest passwordResetRequest) throws CooperaException {
+        if(!Objects.equals(passwordResetRequest.getNewPassword(), passwordResetRequest.getConfirmPassword())) throw  new CooperaException("Password do not match!");
+        String token = passwordResetRequest.getToken();
+        String newPassword = passwordResetRequest.getNewPassword();
+        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(jwtUtil.getSecret().getBytes()))
+                .build().verify(token);
+        if (decodedJWT == null) throw new CooperaException(PASSWORD_RESET_FAILED);
+        Claim claim = decodedJWT.getClaim("memberId");
+        String id = claim.asString();
+        Member member = memberRepository.findById(id).orElseThrow(() ->
+                new CooperaException(String.format(MEMBER_WITH_ID_NOT_FOUND,id)));
+        member.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
+        return PASSWORD_RESET_SUCCESSFUL;
+    }
 }

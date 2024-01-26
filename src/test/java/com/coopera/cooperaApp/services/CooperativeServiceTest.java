@@ -29,7 +29,6 @@ public class CooperativeServiceTest {
 
     @BeforeEach
     public void setUp() throws CooperaException {
-        cooperativeService.deleteAll();
 
         RegisterMemberRequest member = new RegisterMemberRequest();
         member.setEmail("speaktoyin@gmail.com");

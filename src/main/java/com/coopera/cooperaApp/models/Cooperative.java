@@ -31,7 +31,7 @@ public class Cooperative {
     private Company company;
     @OneToOne(cascade = CascadeType.ALL)
     private AccountingEntry accountingEntry;
-    private String password;
+
 
     @PrePersist
     public void prePersist(){

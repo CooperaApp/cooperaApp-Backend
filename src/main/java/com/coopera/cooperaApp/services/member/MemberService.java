@@ -1,5 +1,6 @@
 package com.coopera.cooperaApp.services.member;
 
+import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
 import com.coopera.cooperaApp.dtos.requests.SaveRequest;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
@@ -18,6 +19,8 @@ public interface MemberService {
     MemberResponse setMemberRoleToAdmin(String id) throws CooperaException;
 
     void deleteAll();
+    String forgotMemberPassword(String email) throws CooperaException;
+    String resetPassword(PasswordResetRequest passwordResetRequest) throws CooperaException;
 
     MemberResponse findById(String memberId) throws CooperaException;
 

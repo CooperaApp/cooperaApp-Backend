@@ -6,7 +6,9 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,7 +29,11 @@ public class Member {
     private String photo;
     private String position;
     private String email;
-    private List<Role> roles = new ArrayList<>();
+    @ElementCollection(targetClass = Role.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
+    @Column(name = "role")
+    private Set<Role> roles = new HashSet<>();
     private String password;
     private String phoneNumber;
     @OneToOne

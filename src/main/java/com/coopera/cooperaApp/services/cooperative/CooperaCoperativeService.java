@@ -8,15 +8,26 @@ import com.coopera.cooperaApp.dtos.requests.EmailDetails;
 import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.CooperativeDashboardStatistic;
 import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
+import com.coopera.cooperaApp.dtos.requests.UpdateCooperativeRequest;
+import com.coopera.cooperaApp.dtos.response.CooperativeResponse;
 import com.coopera.cooperaApp.dtos.response.RegisterCooperativeResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Company;
 import com.coopera.cooperaApp.models.Cooperative;
 import com.coopera.cooperaApp.repositories.CooperativeRepository;
+import com.coopera.cooperaApp.security.JwtUtil;
 import com.coopera.cooperaApp.services.Mail.MailService;
 import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
 import com.coopera.cooperaApp.services.loanServices.LoanService;
 import com.coopera.cooperaApp.services.member.MemberService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.github.fge.jackson.jsonpointer.JsonPointer;
+import com.github.fge.jackson.jsonpointer.JsonPointerException;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -26,6 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,7 +55,7 @@ public class CooperaCoperativeService implements CooperativeService {
     private final CooperativeRepository cooperativeRepository;
     private final MailService mailService;
     private final ModelMapper modelMapper;
-    public static final String JWT_SECRET = "${jwt.secret}";
+    private final JwtUtil jwtUtil;
     private PasswordEncoder passwordEncoder;
 
 
@@ -61,7 +74,6 @@ public class CooperaCoperativeService implements CooperativeService {
         if(savedCooperative.getId() == null) throw new CooperaException("Cooperative registration failed");
         Long numberOfCooperativeMembers = memberService.getNumberOfMembersByCooperativeId(savedCooperative.getId());
         return RegisterCooperativeResponse.builder()
-                .id(savedCooperative.getId())
                 .name(savedCooperative.getName())
                 .numberOfMembers(numberOfCooperativeMembers).build();
 
@@ -99,10 +111,6 @@ public class CooperaCoperativeService implements CooperativeService {
         return firstPart + "/" + currentYear + "/" + "00"+sizeOfRepoPlusOne;
     }
 
-    @Override
-    public void deleteAll() {
-        cooperativeRepository.deleteAll();
-    }
 
     @Override
     public Optional<Cooperative> findById(String id) {
@@ -113,24 +121,25 @@ public class CooperaCoperativeService implements CooperativeService {
         return cooperativeRepository.findByEmail(mail);
     }
     @Override
-    public Object forgotPassword(String email) throws CooperaException {
+    public String forgotPassword(String email) throws CooperaException {
       Cooperative cooperative = findCooperativeByMail(email);
       if (cooperative == null) {
-          throw new CooperaException(" Cooperative with email " + email + " does not exist");
+          throw new CooperaException(String.format(INVALID_COOPERATIVE_EMAIL,email));
       }
+      String link =generateLink(cooperative.getId());
         EmailDetails emailDetails = new EmailDetails();
-          emailDetails.setSubject("Verify your account");
+          emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT );
           emailDetails.setRecipient(cooperative.getEmail());
-          emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT, cooperative.getName(), generateLink(cooperative.getId())));
-        return mailService.sendEmail(emailDetails);
+          emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT,cooperative.getName(),link));
+        return mailService.mimeMessage(emailDetails);
     }
-    private static String generateLink(String cooperativeId) {
+    private String generateLink(String cooperativeId) {
         return FRONTEND_URL+"reset-password?token=" +
                 JWT.create()
                         .withIssuedAt(Instant.now())
-                        .withClaim("cooperativeId", cooperativeId)
                         .withExpiresAt(Instant.now().plusSeconds(600L))
-                        .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
+                        .withClaim("cooperativeId", cooperativeId)
+                        .sign(Algorithm.HMAC512(jwtUtil.getSecret().getBytes()));
     }
 
     @Override
@@ -140,18 +149,18 @@ public class CooperaCoperativeService implements CooperativeService {
 
     public String resetPassword(PasswordResetRequest passwordResetRequest) throws CooperaException {
         if(!Objects.equals(passwordResetRequest.getNewPassword(), passwordResetRequest.getConfirmPassword())) throw  new CooperaException("Password do not match!");
-        String token = passwordResetRequest.getToken();
         String newPassword = passwordResetRequest.getNewPassword();
-        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(JWT_SECRET.getBytes()))
-                .build().verify(token);
-        if (decodedJWT == null) throw new CooperaException("Password Reset Failed");
+
+        String token = passwordResetRequest.getToken();
+        DecodedJWT decodedJWT =jwtUtil.validateToken(token);
+        if (decodedJWT == null) throw new CooperaException(PASSWORD_RESET_FAILED);
         Claim claim = decodedJWT.getClaim("cooperativeId");
         String id = claim.asString();
         Cooperative cooperative = cooperativeRepository.findById(id).orElseThrow(() ->
-                new CooperaException(" Cooperative with email " + id+ " does not exist"));
+                new CooperaException(String.format(COOPERATIVE_WITH_ID_NOT_FOUND ,id)));
         cooperative.setPassword(passwordEncoder.encode(newPassword));
         cooperativeRepository.save(cooperative);
-        return PASSWORD_RESET;
+        return PASSWORD_RESET_SUCCESSFUL;
     }
 
     @Override
@@ -177,4 +186,84 @@ public class CooperaCoperativeService implements CooperativeService {
         return null;
 
     }
+    public CooperativeResponse updateCooperativeDetails(UpdateCooperativeRequest updateRequest)
+            throws CooperaException, JsonPointerException, IllegalAccessException {
+        String id= retrieveCooperativeId();
+        Optional<Cooperative> foundCooperative = cooperativeRepository.findById(id);
+        Cooperative cooperative = foundCooperative.orElseThrow(() ->
+                new CooperaException(String.format(COOPERATIVE_WITH_ID_NOT_FOUND, id)));
+
+        JsonPatch jsonPatch = buildUpdatePatch(updateRequest);
+        Cooperative updatedCooperative = updateCooperative(cooperative, jsonPatch);
+        cooperativeRepository.save(updatedCooperative);
+
+        return CooperativeResponse.builder()
+                .id(updatedCooperative.getId())
+                .logo(updatedCooperative.getLogo())
+                .name(updatedCooperative.getName())
+                .email(updatedCooperative.getEmail())
+                .dateCreated(updatedCooperative.getDateCreated())
+                .interestRate(updatedCooperative.getAccountingEntry().getInterestRate())
+                .loanEligibilityRate(updatedCooperative.getAccountingEntry().getLoanEligibilityRate())
+                .companyName(updatedCooperative.getCompany().getCompanyName())
+                .address(updatedCooperative.getCompany().getAddress())
+                .build();
+
+    }
+
+    private JsonPatch buildUpdatePatch(UpdateCooperativeRequest updateRequest) throws IllegalAccessException, JsonPointerException {
+        List<JsonPatchOperation> operations = new ArrayList<>();
+        List<String> updateFields = List.of("name", "email", "logo", "companyName", "address", "interestRate", "loanEligibilityRate");
+        Field[] fields = updateRequest.getClass().getDeclaredFields();
+
+        buildPatchOperations(updateRequest, operations, updateFields, fields);
+        return new JsonPatch(operations);
+    }
+
+    private static void buildPatchOperations(UpdateCooperativeRequest updateRequest, List<JsonPatchOperation> operations, List<String> updateFields, Field[] fields) throws IllegalAccessException, JsonPointerException {
+        for (Field field : fields) {
+            field.setAccessible(true);
+
+            if (field.get(updateRequest)!=null&& updateFields.contains(field.getName())){
+                if (field.getName().contains("company")||field.getName().contains("address")){
+                    var operation = new ReplaceOperation(
+                            new JsonPointer("/company/"+field.getName()),
+                            new TextNode(field.get(updateRequest).toString())
+                    );
+                    operations.add(operation);
+                }else if(field.getName().contains("Rate")){
+                    var operation = new ReplaceOperation(
+                            new JsonPointer("/accountingEntry/"+field.getName()),
+                            new TextNode(field.get(updateRequest).toString())
+                    );
+                    operations.add(operation);
+                }
+                else{
+                    var operation = new ReplaceOperation(
+                            new JsonPointer("/" + field.getName()),
+                            new TextNode(field.get(updateRequest).toString())
+                    );
+                    operations.add(operation);
+                }
+            }
+        }
+    }
+
+    private Cooperative updateCooperative(Cooperative cooperative, JsonPatch jsonPatch) throws CooperaException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode cooperativeNode = mapper.convertValue(cooperative, JsonNode.class);
+        try {
+            JsonNode updatedNode = jsonPatch.apply(cooperativeNode);
+            Cooperative updatedCooperative = mapper.convertValue(updatedNode, Cooperative.class);
+            updatedCooperative.setId(cooperative.getId());
+            updatedCooperative.setPassword(cooperative.getPassword());
+            updatedCooperative.setDateCreated(cooperative.getDateCreated());
+
+            return updatedCooperative;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CooperaException(COOPERATIVE_UPDATE_FAILED);
+        }
+    }
+
 }
