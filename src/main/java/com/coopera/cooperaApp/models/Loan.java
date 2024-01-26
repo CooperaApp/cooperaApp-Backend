@@ -14,6 +14,8 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -43,6 +45,8 @@ public class Loan {
     private LocalDateTime dueDate;
     @OneToOne(cascade = CascadeType.ALL)
     private LoanDuration loanDuration;
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "loan")
+    private List<Endorsement> endorsement = new ArrayList<>();
     private LoanStatus loanStatus;
     private BigDecimal repaymentAmount;
     private BigDecimal amount;

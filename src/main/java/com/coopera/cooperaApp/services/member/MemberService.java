@@ -24,8 +24,15 @@ public interface MemberService {
 
     MemberResponse findById(String memberId) throws CooperaException;
 
-    List<Member> findAllMembers();
+    Member findMemberById(String memberId) throws CooperaException;
+
+    List<MemberResponse> findAllMembers(int page, int items);
+
+    List<Member> findAllMembersWithoutPagination();
 
 
     Long getNumberOfMembersByCooperativeId(String id);
+
+
+
 }

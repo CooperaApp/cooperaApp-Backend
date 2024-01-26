@@ -77,7 +77,7 @@ public class CooperaAdminService implements AdminService{
     private String generateMemberId(){
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
-        var currentSizeOfMembersPlusOne = memberService.findAllMembers().size() + 1;
+        var currentSizeOfMembersPlusOne = memberService.findAllMembersWithoutPagination().size() + 1;
         return coopId + "/" + currentSizeOfMembersPlusOne;
     }
 }
