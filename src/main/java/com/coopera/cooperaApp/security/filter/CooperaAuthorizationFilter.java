@@ -57,6 +57,7 @@ public class CooperaAuthorizationFilter extends OncePerRequestFilter {
 
         if (isValidAuthorizationHeader) {
             String token = authorization.substring(tokenPrefix.length());
+            System.out.println(token + " token from filter");
             authorizeToken(token);
         }
     }

@@ -9,6 +9,7 @@ import com.coopera.cooperaApp.enums.Role;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Member;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import java.time.Instant;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 import static com.coopera.cooperaApp.security.SecurityUtils.JWT_SECRET;
 @AllArgsConstructor
+@Slf4j
 public class JwtUtil {
 
     @Value(JWT_SECRET)
@@ -28,6 +30,7 @@ public class JwtUtil {
     }
 
     private DecodedJWT validateToken(String token){
+        log.info("This is the token " + token);
         return JWT.require(Algorithm.HMAC512(secret.getBytes()))
                 .build().verify(token);
     }

@@ -45,7 +45,7 @@ public class Loan {
     private LocalDateTime dueDate;
     @OneToOne(cascade = CascadeType.ALL)
     private LoanDuration loanDuration;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "loan")
     private List<Endorsement> endorsement = new ArrayList<>();
     private LoanStatus loanStatus;
     private BigDecimal repaymentAmount;
