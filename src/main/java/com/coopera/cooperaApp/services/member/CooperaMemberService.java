@@ -58,7 +58,7 @@ public class CooperaMemberService implements MemberService {
         Cooperative cooperative = optionalCooperative.orElseThrow(() -> new CooperaException(String.format("Cooperative with %s id not found", cooperativeId)));
         cooperativeService.save(cooperative);
         log.info(memberRepository.findAll().size() + "this is all members");
-        return MemberResponse.builder().id(savedMember.getId()).name(savedMember.getFirstName() + " " + savedMember.getLastName()).build();
+        return MemberResponse.builder().id(savedMember.getId()).role(savedMember.getRoles()).name(savedMember.getFirstName() + " " + savedMember.getLastName()).build();
     }
 
 
@@ -67,7 +67,7 @@ public class CooperaMemberService implements MemberService {
         foundMember.orElseThrow(() -> new CooperaException("Could not find member with " + id));
         foundMember.get().getRoles().add(Role.ADMIN);
         var savedMember = memberRepository.save(foundMember.get());
-        return MemberResponse.builder().id(savedMember.getId()).name(savedMember.getFirstName() + " " + savedMember.getLastName()).build();
+        return MemberResponse.builder().id(savedMember.getId()).role(savedMember.getRoles()).name(savedMember.getFirstName() + " " + savedMember.getLastName()).build();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class CooperaMemberService implements MemberService {
         if (foundMember.isEmpty()) {
             throw new CooperaException("Member with id " + memberId + " not found");
         }
-        return MemberResponse.builder().id(foundMember.get().getId()).cooperativeId(foundMember.get().getCooperativeId()).name(foundMember.get().getFirstName() + " " + foundMember.get().getLastName()).build();
+        return MemberResponse.builder().id(foundMember.get().getId()).cooperativeId(foundMember.get().getCooperativeId()).role(foundMember.get().getRoles()).name(foundMember.get().getFirstName() + " " + foundMember.get().getLastName()).build();
 
     }
 

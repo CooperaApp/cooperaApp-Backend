@@ -20,7 +20,7 @@ import java.util.Set;
 @ToString
 public class MemberResponse {
     private String name;
-//    private Set<Role> role;
+    private List<Role> role;
     private String id;
     private String cooperativeId;
     private String firstName;
