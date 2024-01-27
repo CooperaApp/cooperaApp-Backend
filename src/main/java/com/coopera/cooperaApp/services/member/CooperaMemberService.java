@@ -21,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -92,9 +91,11 @@ public class CooperaMemberService implements MemberService {
     }
 
     @Override
-    public List<MemberResponse> findAllMembers(int page, int items) {
+    public List<MemberResponse> findAllMembersByCooperativeId(int page, int items) {
+        String cooperativeId = retrieveCooperativeId();
         Pageable pageable = AppUtils.buildPageRequest(page, items);
-        Page<Member> memberPage = memberRepository.findAll(pageable);
+        System.out.println("Items::>> "+items);
+        Page<Member> memberPage = memberRepository.findAllByCooperativeId(cooperativeId, pageable);
         List<Member> members = memberPage.getContent();
         return members.stream().map(CooperaMemberService::buildMemberResponse).toList(); }
 

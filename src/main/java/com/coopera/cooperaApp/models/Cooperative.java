@@ -20,8 +20,8 @@ public class Cooperative {
     @Id
     @Column(name = "id", columnDefinition = "VARCHAR(50)")
     private String id;
-    private String name;
     private String email;
+    private String name;
     private String password;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

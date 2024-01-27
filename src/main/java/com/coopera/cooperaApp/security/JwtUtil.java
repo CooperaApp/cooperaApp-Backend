@@ -12,12 +12,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.coopera.cooperaApp.security.SecurityUtils.JWT_SECRET;
+
 @AllArgsConstructor
 @Getter
 @Slf4j
@@ -26,7 +28,7 @@ public class JwtUtil {
     @Value(JWT_SECRET)
     private String secret;
 
-    public  Map<String, Claim> extractClaimsFromToken(String token) throws CooperaException {
+    public Map<String, Claim> extractClaimsFromToken(String token) throws CooperaException {
         DecodedJWT decodedJwt = validateToken(token);
         return decodedJwt.getClaims();
     }
@@ -52,8 +54,15 @@ public class JwtUtil {
 //            map.put("role"+number, roles.toArray()[i].toString());
 //            number++;
 //        }
-        return JWT.create().withIssuedAt(Instant.now()).withExpiresAt(Instant.now().plusSeconds(86000L)).
-                withClaim("id", id).sign(Algorithm.HMAC512(secret.getBytes()));
+        return JWT
+                .create()
+                .withIssuedAt(Instant.now())
+                .withExpiresAt(
+                        Instant.now()
+                        .plusSeconds(86000L)
+                )
+                .withClaim("id", id)
+                .sign(Algorithm.HMAC512(secret.getBytes()));
     }
 
 }

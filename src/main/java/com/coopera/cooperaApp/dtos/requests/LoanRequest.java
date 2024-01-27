@@ -15,8 +15,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoanRequest {
-    @Id
-    private String id;
     private String description;
     private LoanDuration loanDuration;
     private BigDecimal amount;

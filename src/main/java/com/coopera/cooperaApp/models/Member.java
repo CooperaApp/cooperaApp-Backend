@@ -3,6 +3,8 @@ package com.coopera.cooperaApp.models;
 import com.coopera.cooperaApp.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,11 +31,11 @@ public class Member {
     private String photo;
     private String position;
     private String email;
-    @ElementCollection(targetClass = Role.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
+   // @ElementCollection(targetClass = Role.class)
+ //   @Enumerated(EnumType.STRING)
+ //  @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
     @Column(name = "role")
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
     private String password;
     private String phoneNumber;
     @OneToOne
