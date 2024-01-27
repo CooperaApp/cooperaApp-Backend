@@ -26,6 +26,10 @@ public class Endorsement {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateRequested;
+    @ManyToOne
+    @JoinColumn(name = "loan_id")
+    private Loan loan;
+
 
     @PrePersist
     void prePersist(){

@@ -57,6 +57,7 @@ public class CooperaMemberService implements MemberService {
         Optional<Cooperative> optionalCooperative = cooperativeService.findById(cooperativeId.asString());
         Cooperative cooperative = optionalCooperative.orElseThrow(() -> new CooperaException(String.format("Cooperative with %s id not found", cooperativeId)));
         cooperativeService.save(cooperative);
+        log.info(memberRepository.findAll().size() + "this is all members");
         return MemberResponse.builder().id(savedMember.getId()).role(savedMember.getRoles()).name(savedMember.getFirstName() + " " + savedMember.getLastName()).build();
     }
 
