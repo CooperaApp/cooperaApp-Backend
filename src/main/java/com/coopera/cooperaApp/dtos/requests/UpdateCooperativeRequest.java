@@ -1,4 +1,4 @@
-package com.coopera.cooperaApp.dtos.response;
+package com.coopera.cooperaApp.dtos.requests;
 
 import com.coopera.cooperaApp.models.AccountingEntry;
 import com.coopera.cooperaApp.models.Company;
@@ -8,27 +8,17 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToOne;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-@Getter
 @Setter
-@Builder
-@ToString
-public class CooperativeResponse {
+public class UpdateCooperativeRequest {
 
-    private String id;
     private String name;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime dateCreated;
     private String logo;
     private String email;
-    @OneToOne(cascade = CascadeType.ALL)
     private String companyName;
     private String address;
     private Double interestRate;

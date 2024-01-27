@@ -9,6 +9,7 @@ import com.coopera.cooperaApp.enums.Role;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Member;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import java.time.Instant;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import static com.coopera.cooperaApp.security.SecurityUtils.JWT_SECRET;
 @AllArgsConstructor
+@Getter
 @Slf4j
 public class JwtUtil {
 
@@ -29,14 +31,14 @@ public class JwtUtil {
         return decodedJwt.getClaims();
     }
 
-    private DecodedJWT validateToken(String token){
+    public DecodedJWT validateToken(String token){
         log.info("This is the token " + token);
         return JWT.require(Algorithm.HMAC512(secret.getBytes()))
                 .build().verify(token);
     }
 
     public DecodedJWT verifyToken(String token) {
-        System.out.println("Hello");
+        System.out.println("Token 2"+ token);
         Algorithm algorithm = Algorithm.HMAC512(secret.getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         return verifier.verify(token);
