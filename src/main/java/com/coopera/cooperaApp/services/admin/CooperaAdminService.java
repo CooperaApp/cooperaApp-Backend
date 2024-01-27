@@ -6,6 +6,7 @@ import com.coopera.cooperaApp.dtos.requests.EmailDetails;
 import com.coopera.cooperaApp.dtos.requests.InvitationLinkRequest;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Cooperative;
+import com.coopera.cooperaApp.security.JwtUtil;
 import com.coopera.cooperaApp.services.Mail.MailService;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.coopera.cooperaApp.services.member.MemberService;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.INVITATION_MAIL_SUBJECT;
 import static com.coopera.cooperaApp.utilities.AppUtils.MEMBER_INVITATION_HTML_TEMPLATE_LOCATION;
@@ -30,6 +30,7 @@ public class CooperaAdminService implements AdminService{
     private final MemberService memberService;
 
     private final MailService mailService;
+    private final JwtUtil jwtUtil;
 
     public static final String JWT_SECRET = "${jwt.secret}";
     @Override
@@ -40,26 +41,20 @@ public class CooperaAdminService implements AdminService{
         String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         List<String> requestList = recipient.getRecipientEmail();
         int successCount = 0;
-        String link = generateInviteLink(memberId, coopId);
+        String link = generateInviteLink(memberId, coopId, jwtUtil.getSecret());
         log.info("this is the link " + link);
         successCount = sendInviteToRecipient(requestList, link, successCount, coopId, cooperativeService);
         return emailSenderResponse(successCount);
     }
 
-    private static String generateInviteLink(String memberId, String cooperativeId) {
+    private static String generateInviteLink(String memberId, String cooperativeId, String secret) {
         return "localhost:3000/membersLogin?token=" + JWT.create().withIssuedAt(Instant.now()).
                 withClaim("memberId", memberId).
                 withClaim("cooperativeId", cooperativeId).
                 withExpiresAt(Instant.now().plusSeconds(864000L))
-                .sign(Algorithm.HMAC512(JWT_SECRET.getBytes()));
+                .sign(Algorithm.HMAC512(secret.getBytes()));
     }
 
-    public static void main(String[] args) {
-        for (int i = 5; i <7; i++) {
-            System.out.println(generateInviteLink("Abb/2024/0011/"+i, "Abb/2024/0011"));
-
-        }
-    }
 
     private int sendInviteToRecipient(List<String> requestList, String link, int successCount, String coopId, CooperativeService cooperativeService) throws CooperaException {
         System.out.println("Link::>> "+link);
