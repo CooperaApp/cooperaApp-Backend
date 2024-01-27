@@ -42,6 +42,7 @@ public class CooperaAdminService implements AdminService{
         List<String> requestList = recipient.getRecipientEmail();
         int successCount = 0;
         String link = generateInviteLink(memberId, coopId, jwtUtil.getSecret());
+        log.info("this is the link " + link);
         successCount = sendInviteToRecipient(requestList, link, successCount, coopId, cooperativeService);
         return emailSenderResponse(successCount);
     }

@@ -31,12 +31,11 @@ public class Member {
     private String photo;
     private String position;
     private String email;
-    @ElementCollection(targetClass = Role.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
+   // @ElementCollection(targetClass = Role.class)
+ //   @Enumerated(EnumType.STRING)
+ //  @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
     @Column(name = "role")
-    @Cascade(CascadeType.ALL)
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
     private String password;
     private String phoneNumber;
     private String loanEligibilityStatus;
