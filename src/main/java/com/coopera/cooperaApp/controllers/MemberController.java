@@ -1,5 +1,7 @@
 package com.coopera.cooperaApp.controllers;
 
+import com.coopera.cooperaApp.dtos.requests.ForgotPasswordRequest;
+import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
 import com.coopera.cooperaApp.dtos.requests.SaveRequest;
 import com.coopera.cooperaApp.dtos.response.ApiResponse;
@@ -9,6 +11,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.coopera.cooperaApp.utilities.AppUtils.ACCOUNT_VERIFICATION_SENT;
+import static com.coopera.cooperaApp.utilities.AppUtils.PASSWORD_RESET_SUCCESSFUL;
 
 @RestController
 @RequestMapping("/api/v1/member")
@@ -26,6 +31,40 @@ public class MemberController {
             return ResponseEntity.badRequest().body(ApiResponse.builder().message(e.getMessage()).build());
         }
     }
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<?> forgotPassWord(@RequestBody ForgotPasswordRequest request){
+        try {
+            var response = memberService.forgotMemberPassword(request.getEmail());
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
+                    .message(ACCOUNT_VERIFICATION_SENT)
+                    .success(true)
+                    .data(response)
+                    .build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .message(e.getMessage())
+                    .success(false)
+                    .build());
+        }
+    }
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassWord(@RequestBody PasswordResetRequest passwordResetRequest){
+        try {
+            var response = memberService.resetPassword(passwordResetRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
+                    .message(PASSWORD_RESET_SUCCESSFUL)
+                    .success
+                            (true)
+                    .data(response)
+                    .build());
+        } catch (CooperaException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.builder()
+                    .message(e.getMessage())
+                    .success(false)
+                    .build());
+        }
+    }
+
 
     @GetMapping("/findAllMembersByCooperativeId")
     public ResponseEntity<ApiResponse<?>> findAllMembersByCooperativeId(
@@ -36,7 +75,5 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder().
                 message("Member successfuly Created").data(response).success(true).build());
     }
-
-
 
 }
