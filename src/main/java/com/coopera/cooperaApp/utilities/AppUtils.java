@@ -7,7 +7,37 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.math.BigDecimal;
 
 public class AppUtils {
-    public static final String MEMBER_INVITATION_HTML_TEMPLATE_LOCATION = "/memberInvitationTemplate.txt";
+    public static final String VERIFY_ACCOUNT = """
+            Hi %s,
+            
+            Verify your account and enjoy the best experience with Coopera.
+            
+            %s
+            
+            Click on the link above to verify your account.
+           """;
+    public static final String VERIFY_MEMBER_ACCOUNT = """
+            Hi %s,
+            
+            Verify your account and enjoy the best experience.
+            
+            %s
+            
+            Click on the link above to verify your account.
+           """;
+    public static final String PASSWORD_RESET_FAILED="Password Reset Failed";
+    public static final String PASSWORD_RESET_SUCCESSFUL = "Password reset successful";
+    public static final String FRONTEND_URL = "localhost:3000/";
+   public static final String COOPERATIVE_WITH_ID_NOT_FOUND = "Cooperative with ID %s not found";
+    public static final String MEMBER_WITH_ID_NOT_FOUND = "Member with ID %s not found";
+   public static final String COOPERATIVE_UPDATE_FAILED= "Cooperative update failed";
+    public static final String COOPERATIVE_UPDATE_SUCCESSFUL= "Cooperative update successfully";
+    public static final String ACCOUNT_VERIFICATION_SUBJECT = "Verify your account";
+    public static final String INVALID_COOPERATIVE_EMAIL = "Cooperative with email %s does not exist";
+    public static final String INVALID_MEMBER_EMAIL = "Member with email %s does not exist";
+    public static final String ACCOUNT_VERIFICATION_SENT= "Account verification mail sent successfully";
+   public static final String MEMBER_INVITATION_HTML_TEMPLATE_LOCATION = "/memberInvitationTemplate.txt";
+    public static final String ACCOUNT_VERIFICATION_HTML_TEMPLATE_LOCATION = "/accountVerificationTemplate.txt";
     public static final String INVITATION_MAIL_SUBJECT = "Invitation to Join %s";
     public static final String SAVINGS_NOT_FOUND = "Savings with ID %s not found";
     public static final String SAVINGS_DATA_FOUND = "Savings data found";

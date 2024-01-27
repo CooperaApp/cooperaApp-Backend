@@ -1,9 +1,11 @@
 package com.coopera.cooperaApp;
 
+import com.coopera.cooperaApp.dtos.requests.UpdateCooperativeRequest;
 import com.coopera.cooperaApp.models.AccountingEntry;
 import com.coopera.cooperaApp.repositories.CooperativeRepository;
 import com.coopera.cooperaApp.repositories.LoanRepository;
 import com.coopera.cooperaApp.repositories.MemberRepository;
+import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,8 @@ class CooperaAppApplicationTests {
     public LoanRepository loanRepository;
     @Autowired
     public MemberRepository memberRepository;
+	@Autowired
+	public CooperativeService cooperativeService;
     @Autowired
     public CooperativeRepository cooperativeRepository;
     @Autowired
@@ -66,5 +70,14 @@ class CooperaAppApplicationTests {
 			}
 		}
     }
-
+@Test
+	void updateCooperativeTest() throws Exception {
+	UpdateCooperativeRequest request = new UpdateCooperativeRequest();
+	request.setName("John Doe");
+	request.setCompanyName("John Doe");
+	request.setAddress("123");
+	request.setInterestRate(2.0);
+	request.setLoanEligibilityRate(1L);
+	cooperativeService.updateCooperativeDetails(request);
+}
 }

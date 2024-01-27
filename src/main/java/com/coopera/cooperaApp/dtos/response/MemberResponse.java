@@ -12,6 +12,7 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,7 +20,7 @@ import java.util.List;
 @ToString
 public class MemberResponse {
     private String name;
-    private List<Role> role;
+    private Set<Role> role;
     private String id;
     private String cooperativeId;
     private String firstName;

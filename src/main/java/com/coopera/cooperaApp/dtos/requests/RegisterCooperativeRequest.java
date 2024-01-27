@@ -1,5 +1,6 @@
 package com.coopera.cooperaApp.dtos.requests;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -12,11 +13,12 @@ public class RegisterCooperativeRequest {
     private String name;
 
 
-    @NotBlank(message = "Email is required.")
-    private String email;
-
     @NotBlank
     private String logo;
+
+    @NotBlank(message = "Cooperative email is required.")
+    @Email
+    private String email;
 
     @NotBlank(message = "Company name is required.")
     @Size

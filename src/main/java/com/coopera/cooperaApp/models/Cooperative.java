@@ -22,6 +22,7 @@ public class Cooperative {
     private String id;
     private String email;
     private String name;
+    private String password;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateCreated;
@@ -30,7 +31,7 @@ public class Cooperative {
     private Company company;
     @OneToOne(cascade = CascadeType.ALL)
     private AccountingEntry accountingEntry;
-    private String password;
+
 
     @PrePersist
     public void prePersist(){

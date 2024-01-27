@@ -1,5 +1,6 @@
 package com.coopera.cooperaApp.controllers;
 
+import com.coopera.cooperaApp.dtos.requests.ForgotPasswordRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterCooperativeRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,11 +23,14 @@ public class CooperativeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     @Test
-    public void registerCooperative() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        RegisterCooperativeRequest registrationRequest = getRegisterCooperativeRequest(getRegisterMemberRequest());
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/cooperative")
+    public void registerCooperativeTest() throws Exception {
+//        ObjectMapper mapper = new ObjectMapper();
+        RegisterCooperativeRequest registrationRequest = getRegisterCooperativeRequest();
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/cooperative/register")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(mapper.writeValueAsBytes(registrationRequest)))
                 .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CREATED.value()))
@@ -34,9 +38,10 @@ public class CooperativeControllerTest {
 
     }
 
-    private static RegisterCooperativeRequest getRegisterCooperativeRequest(RegisterMemberRequest member) {
+    private static RegisterCooperativeRequest getRegisterCooperativeRequest() {
         RegisterCooperativeRequest registrationRequest = new RegisterCooperativeRequest();
         registrationRequest.setLogo("Work Hard , Save Hard");
+        registrationRequest.setEmail("speaktoyin5@gmail.com");
      //   registrationRequest.setMemberRequest(member);
         registrationRequest.setName("REGNOS");
         registrationRequest.setAddress("312, herbert macaulay");
@@ -44,15 +49,14 @@ public class CooperativeControllerTest {
         registrationRequest.setCompanyName("Coopera");
         return registrationRequest;
     }
-
-    private static RegisterMemberRequest getRegisterMemberRequest() {
-        RegisterMemberRequest member = new RegisterMemberRequest();
-        member.setEmail("speaktoyin5@gmail.com");
-        member.setPosition("President");
-        member.setPassword("Tinuade1");
-        member.setFirstName("Tinu");
-        member.setLastName("Ade");
-        member.setPhoneNumber("08138732503");
-        return member;
+    @Test
+    public void testForgotPassword() throws Exception {
+        ForgotPasswordRequest mail = new ForgotPasswordRequest();
+        mail.setEmail("speaktoyin5@gmail.com");
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/cooperative/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapper.writeValueAsBytes(mail)))
+                .andExpect(MockMvcResultMatchers.status().is(HttpStatus.CREATED.value()))
+                .andDo(print());
     }
 }
