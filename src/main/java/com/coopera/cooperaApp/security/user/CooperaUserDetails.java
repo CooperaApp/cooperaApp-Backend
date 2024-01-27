@@ -23,7 +23,8 @@ public class CooperaUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities= new ArrayList<>();
-
+        System.out.println("Member::>> "+member.toString());
+        System.out.println("Roles::>> "+member.getRoles());
         for(Role role: member.getRoles()){
             authorities.add(new SimpleGrantedAuthority(role.name()));
         }
