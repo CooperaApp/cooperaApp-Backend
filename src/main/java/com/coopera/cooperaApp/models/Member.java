@@ -39,6 +39,7 @@ public class Member {
     private Set<Role> roles = new HashSet<>();
     private String password;
     private String phoneNumber;
+    private String loanEligibilityStatus;
     @OneToOne
     private Account account;
     @OneToOne
