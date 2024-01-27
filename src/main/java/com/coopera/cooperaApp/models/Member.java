@@ -33,7 +33,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
     @Column(name = "role")
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
     private String password;
     private String phoneNumber;
     @OneToOne
