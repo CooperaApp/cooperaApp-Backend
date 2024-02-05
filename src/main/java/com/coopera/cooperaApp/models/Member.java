@@ -38,6 +38,7 @@ public class Member {
     private List<Role> roles = new ArrayList<>();
     private String password;
     private String phoneNumber;
+    private String loanEligibilityStatus;
     @OneToOne
     private Account account;
     @OneToOne

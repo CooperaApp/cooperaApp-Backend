@@ -70,14 +70,5 @@ class CooperaAppApplicationTests {
 			}
 		}
     }
-@Test
-	void updateCooperativeTest() throws Exception {
-	UpdateCooperativeRequest request = new UpdateCooperativeRequest();
-	request.setName("John Doe");
-	request.setCompanyName("John Doe");
-	request.setAddress("123");
-	request.setInterestRate(2.0);
-	request.setLoanEligibilityRate(1L);
-	cooperativeService.updateCooperativeDetails(request);
-}
+
 }

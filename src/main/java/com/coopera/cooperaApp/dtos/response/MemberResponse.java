@@ -30,6 +30,7 @@ public class MemberResponse {
     private String position;
     private String email;
     private String phoneNumber;
+    private String loanEligibilityStatus;
 }
 
 
