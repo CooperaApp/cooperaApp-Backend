@@ -24,6 +24,7 @@ public interface CooperativeService {
     String resetPassword(PasswordResetRequest passwordResetRequest) throws CooperaException;
     CooperativeResponse updateCooperativeDetails(UpdateCooperativeRequest updateRequest)throws Exception;
     Optional<Cooperative> findById(String id);
+    Optional<Cooperative> findByEmail(String email);
     void save(Cooperative cooperative);
 
     CooperativeDashboardStatistic getDashboardStatistics(SavingsService savingsService, LoanService loanService);

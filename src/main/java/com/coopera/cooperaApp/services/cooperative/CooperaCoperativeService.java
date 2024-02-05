@@ -116,6 +116,12 @@ public class CooperaCoperativeService implements CooperativeService {
     public Optional<Cooperative> findById(String id) {
         return cooperativeRepository.findById(id);
     }
+
+    @Override
+    public Optional<Cooperative> findByEmail(String email) {
+        return Optional.ofNullable(cooperativeRepository.findByEmail(email));
+    }
+
     @Override
     public Cooperative findCooperativeByMail(String mail) {
         return cooperativeRepository.findByEmail(mail);
