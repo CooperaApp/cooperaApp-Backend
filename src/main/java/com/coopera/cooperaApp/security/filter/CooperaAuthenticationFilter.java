@@ -1,12 +1,7 @@
 package com.coopera.cooperaApp.security.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.coopera.cooperaApp.dtos.requests.LoginRequest;
-import com.coopera.cooperaApp.dtos.response.MemberResponse;
-import com.coopera.cooperaApp.enums.Role;
-import com.coopera.cooperaApp.models.Cooperative;
-import com.coopera.cooperaApp.models.Member;
+import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.security.JwtUtil;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.coopera.cooperaApp.services.member.MemberService;
@@ -24,10 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.coopera.cooperaApp.security.SecurityUtils.BADCREDENTIALSEXCEPTION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -41,6 +34,9 @@ public class CooperaAuthenticationFilter extends UsernamePasswordAuthenticationF
     private String email;
     private String password;
     private final JwtUtil jwtUtil;
+    private final MemberService memberService;
+    private final CooperativeService cooperativeService;
+    private String id;
 
 
     @Override
@@ -51,11 +47,24 @@ public class CooperaAuthenticationFilter extends UsernamePasswordAuthenticationF
             password = loginRequest.getPassword();
             Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
             Authentication authenticationResult = authenticationManager.authenticate(authentication);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String idForContext = extractIdFromEmail(email);
+            id = idForContext;
+            Authentication authenticationForContext = new UsernamePasswordAuthenticationToken(idForContext, password);
+            SecurityContextHolder.getContext().setAuthentication(authenticationForContext);
             return authenticationResult;
         } catch (IOException exception) {
             throw new BadCredentialsException(BADCREDENTIALSEXCEPTION);
         }
+    }
+
+    private String extractIdFromEmail(String email){
+        String id = null;
+        try {
+            id = memberService.findMemberByMail(email).getId();
+        } catch (CooperaException ignored) {
+        }
+        if (id == null) id = cooperativeService.findByEmail(email).get().getId();
+        return  id;
     }
 
     @SneakyThrows
@@ -64,7 +73,7 @@ public class CooperaAuthenticationFilter extends UsernamePasswordAuthenticationF
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException {
-        String accessToken = jwtUtil.generateAccessToken(email);
+        String accessToken = jwtUtil.generateAccessToken(id);
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("access_token", accessToken);
         //  String email = (String) authResult.getPrincipal();
