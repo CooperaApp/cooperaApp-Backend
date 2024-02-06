@@ -42,7 +42,7 @@ public class SecurityConfig {
                 )
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/v1/cooperative/register", "/api/v1/admin/generateLink", "/api/v1/admin/testing", "/api/v1/member/save", "api/v1/member/register", "api/v1/loans/requestLoan")
+                        .requestMatchers("/api/v1/cooperative/register", "/api/v1/admin/generateLink", "/api/v1/admin/testing", "/api/v1/member/save", "api/v1/member/register", "api/v1/loans/requestLoan","api/v1/cooperative/forgotPassword")
                         .permitAll()
                         .anyRequest()
                         .authenticated()
