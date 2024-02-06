@@ -24,7 +24,7 @@ public class CooperaUserDetailsService implements UserDetailsService {
     @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Member> member = memberRepository.findById(username);
+        Optional<Member> member = memberRepository.findByEmail(username);
         Member foundMember = member.orElseThrow(() -> new CooperaException("Member Not Found"));
         UserDetails userDetails = new CooperaUserDetails(foundMember);
         return userDetails;

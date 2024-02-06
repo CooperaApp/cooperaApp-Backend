@@ -55,6 +55,7 @@ public class CooperaAuthenticationProvider implements AuthenticationProvider {
         UserDetails details = cooperativedetails.loadUserByUsername(principal);
         if (!(details == null)) {
             String cooperativeId = details.getUsername();
+            System.out.println("this si coope ID " + cooperativeId );
             String cooperativePassword = details.getPassword();
             if (!cooperativeId.isEmpty()) {
                 if (passwordEncoder.matches(password, cooperativePassword)) {
