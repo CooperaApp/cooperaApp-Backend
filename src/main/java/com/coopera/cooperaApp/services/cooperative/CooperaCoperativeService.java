@@ -162,6 +162,7 @@ public class CooperaCoperativeService implements CooperativeService {
         if (decodedJWT == null) throw new CooperaException(PASSWORD_RESET_FAILED);
         Claim claim = decodedJWT.getClaim("cooperativeId");
         String id = claim.asString();
+        System.out.println(id);
         Cooperative cooperative = cooperativeRepository.findById(id).orElseThrow(() ->
                 new CooperaException(String.format(COOPERATIVE_WITH_ID_NOT_FOUND, id)));
         cooperative.setPassword(passwordEncoder.encode(newPassword));

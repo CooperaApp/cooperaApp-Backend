@@ -33,3 +33,5 @@ build/
 .vscode/
 .gitignore
 secret.properties
+
+pom.xml

@@ -29,6 +29,10 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("error", exception.getMessage());
         System.out.println("Endpoint::>>" +request.getRequestURL().toString());
+        System.err.println("Error::>>" +exception.getMessage());
+        System.err.println("Error::>>" +exception.getLocalizedMessage());
+        System.err.println("Error::>>" +exception.getCause());
+        System.err.println("Error::>>" +exception.getCause().getMessage());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
