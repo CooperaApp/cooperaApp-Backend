@@ -4,6 +4,8 @@ import com.coopera.cooperaApp.enums.Role;
 import com.coopera.cooperaApp.exceptions.exceptionHandlers.CustomAuthenticationFailureHandler;
 import com.coopera.cooperaApp.security.filter.CooperaAuthenticationFilter;
 import com.coopera.cooperaApp.security.filter.CooperaAuthorizationFilter;
+import com.coopera.cooperaApp.services.cooperative.CooperativeService;
+import com.coopera.cooperaApp.services.member.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,12 +25,14 @@ public class SecurityConfig {
 
     private final AuthenticationManager authenticationManager;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final MemberService memberService;
+    private final CooperativeService cooperativeService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final JwtUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        UsernamePasswordAuthenticationFilter authenticationFilter = new CooperaAuthenticationFilter(authenticationManager, objectMapper, null, null, jwtUtil);
+        UsernamePasswordAuthenticationFilter authenticationFilter = new CooperaAuthenticationFilter(authenticationManager, objectMapper, null, null, jwtUtil, memberService, cooperativeService, null);
         CooperaAuthorizationFilter authorizationFilter = new CooperaAuthorizationFilter(jwtUtil);
 
         return httpSecurity

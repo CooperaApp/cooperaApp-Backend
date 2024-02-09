@@ -35,14 +35,12 @@ public class CooperaAdminService implements AdminService{
     public static final String JWT_SECRET = "${jwt.secret}";
     @Override
     public Object generateInvitationLink(InvitationLinkRequest recipient, CooperativeService cooperativeService) throws CooperaException {
-        System.out.println("I reach here");
         String memberId = generateMemberId();
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         List<String> requestList = recipient.getRecipientEmail();
         int successCount = 0;
         String link = generateInviteLink(memberId, coopId, jwtUtil.getSecret());
-        log.info("this is the link " + link);
         successCount = sendInviteToRecipient(requestList, link, successCount, coopId, cooperativeService);
         return emailSenderResponse(successCount);
     }
