@@ -83,7 +83,6 @@ public class CooperaCoperativeService implements CooperativeService {
         Cooperative cooperative = new Cooperative();
         cooperative.setEmail(request.getEmail());
         cooperative.setName(request.getName());
-        cooperative.setLogo(request.getLogo());
         cooperative.setCompany(company);
         cooperative.setPassword(passwordEncoder.encode(request.getPassword()));
         cooperative.setDateCreated(LocalDateTime.now());
