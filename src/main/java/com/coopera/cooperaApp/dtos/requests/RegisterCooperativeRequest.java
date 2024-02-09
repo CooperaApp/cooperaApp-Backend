@@ -13,8 +13,6 @@ public class RegisterCooperativeRequest {
     private String name;
 
 
-    @NotBlank
-    private String logo;
 
     @NotBlank(message = "Cooperative email is required.")
     @Email
@@ -27,8 +25,6 @@ public class RegisterCooperativeRequest {
     @NotBlank(message = "rcNumber is required.")
     private String rcNumber;
 
-    @NotBlank(message = "Company address is required.")
-    private String address;
 
     private String password;
 
