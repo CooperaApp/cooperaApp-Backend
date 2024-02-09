@@ -48,16 +48,7 @@ public class CooperativeServiceTest {
         assertThat(response.getName()).isEqualTo("REGNOS");
 
     }
-    private static RegisterCooperativeRequest getRegisterCooperativeRequest() {
-        RegisterCooperativeRequest registrationRequest = new RegisterCooperativeRequest();
-        registrationRequest.setLogo("Work Hard , Save Hard");
-       registrationRequest.setEmail("speaktoyin5@gmail.com");
-        registrationRequest.setName("REGNOS");
-        registrationRequest.setAddress("312, herbert macaulay");
-        registrationRequest.setRcNumber("179092004");
-        registrationRequest.setCompanyName("Coopera");
-        return registrationRequest;
-    }
+
     @Test
     public void testThatCooperativeCanBeFoundByMail(){
        var response = cooperativeService.findCooperativeByMail("speaktoyin5@gmail.com");
