@@ -147,4 +147,10 @@ public class LoanServiceImpl implements LoanService {
         BigDecimal totalRepaidLoan = loanRepository.calculateTotalRepaidLoan(cooperativeId);
         return totalRepaidLoan == null ? BigDecimal.ZERO : totalRepaidLoan;
     }
+
+    @Override
+    public BigDecimal calculateTotalObtainedByMember(String memberId) {
+        BigDecimal totalLoanObtained = loanRepository.calculateTotalLoanObtained(memberId);
+        return totalLoanObtained == null ? BigDecimal.ZERO : totalLoanObtained;
+    }
 }

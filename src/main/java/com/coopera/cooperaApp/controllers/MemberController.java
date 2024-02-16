@@ -6,6 +6,8 @@ import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
 import com.coopera.cooperaApp.dtos.requests.SaveRequest;
 import com.coopera.cooperaApp.dtos.response.ApiResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
+import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
+import com.coopera.cooperaApp.services.loanServices.LoanService;
 import com.coopera.cooperaApp.services.member.MemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ import static com.coopera.cooperaApp.utilities.AppUtils.PASSWORD_RESET_SUCCESSFU
 @AllArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final SavingsService savingsService;
+    private final LoanService loanService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterMemberRequest registerMemberRequest)  {
@@ -74,6 +78,13 @@ public class MemberController {
         var response =  memberService.findAllMembersByCooperativeId(page, items);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder().
                 message("Member successfuly Created").data(response).success(true).build());
+    }
+
+    @GetMapping("/getMemberDashboardStatistic")
+
+    public ResponseEntity<ApiResponse<?>> getMemberDashboardStatistics(){
+        var response = memberService.getMemberDashboardStatistic(savingsService, loanService);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder().message("").data(response).success(true).build());
     }
 
 }

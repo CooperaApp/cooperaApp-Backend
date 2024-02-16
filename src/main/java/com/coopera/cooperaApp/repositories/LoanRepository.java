@@ -21,4 +21,7 @@ public interface LoanRepository extends JpaRepository<Loan, String > {
     @Query("SELECT sum(l.amount) FROM Loan l where l.cooperativeId = :cooperativeId AND l.loanStatus = com.coopera.cooperaApp.enums.LoanStatus.PAID")
     BigDecimal calculateTotalRepaidLoan(String cooperativeId);
 
+    @Query("SELECT sum(l.amount) FROM Loan l where l.memberId = :memberId AND l.loanStatus = com.coopera.cooperaApp.enums.LoanStatus.ONGOING AND l.loanStatus = com.coopera.cooperaApp.enums.LoanStatus.PAID")
+    BigDecimal calculateTotalLoanObtained(String memberId);
+
 }
