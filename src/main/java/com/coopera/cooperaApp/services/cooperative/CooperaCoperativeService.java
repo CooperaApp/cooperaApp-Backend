@@ -219,7 +219,7 @@ public class CooperaCoperativeService implements CooperativeService {
 
     private JsonPatch buildUpdatePatch(UpdateCooperativeRequest updateRequest) throws IllegalAccessException, JsonPointerException {
         List<JsonPatchOperation> operations = new ArrayList<>();
-        List<String> updateFields = List.of("name", "email", "logo", "companyName", "address", "interestRate", "loanEligibilityRate");
+        List<String> updateFields = List.of("name", "logo", "companyName", "address", "interestRate", "loanEligibilityRate");
         Field[] fields = updateRequest.getClass().getDeclaredFields();
 
         buildPatchOperations(updateRequest, operations, updateFields, fields);
