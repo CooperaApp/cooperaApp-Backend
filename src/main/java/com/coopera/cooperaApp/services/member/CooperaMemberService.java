@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.coopera.cooperaApp.dtos.requests.EmailDetails;
 import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
+import com.coopera.cooperaApp.dtos.response.MemberDashboardStatistic;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
 import com.coopera.cooperaApp.enums.Role;
 import com.coopera.cooperaApp.exceptions.CooperaException;
@@ -15,7 +16,9 @@ import com.coopera.cooperaApp.models.Member;
 import com.coopera.cooperaApp.repositories.MemberRepository;
 import com.coopera.cooperaApp.security.JwtUtil;
 import com.coopera.cooperaApp.services.Mail.MailService;
+import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
+import com.coopera.cooperaApp.services.loanServices.LoanService;
 import com.coopera.cooperaApp.utilities.AppUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -112,6 +115,19 @@ public class CooperaMemberService implements MemberService {
     @Override
     public Long getNumberOfMembersByCooperativeId(String cooperativeId) {
         return memberRepository.countAllByCooperativeId(cooperativeId);
+    }
+
+    @Override
+    public MemberDashboardStatistic getMemberDashboardStatistic(SavingsService savingsService, LoanService loanService) {
+        String memberId = retrieveMemberEmail();
+        BigDecimal totalMemberSavings = savingsService.calculateTotalMemberSavings(memberId);
+        BigDecimal totalMemberLoans = loanService.calculateTotalObtainedByMember(memberId);
+
+        MemberDashboardStatistic memberDashboardStatistic = new MemberDashboardStatistic();
+        memberDashboardStatistic.setTotalSavings(totalMemberSavings);
+        memberDashboardStatistic.setTotalLoans(totalMemberLoans);
+
+        return memberDashboardStatistic;
     }
 
     private String extractCooperativeName(String id) throws CooperaException {

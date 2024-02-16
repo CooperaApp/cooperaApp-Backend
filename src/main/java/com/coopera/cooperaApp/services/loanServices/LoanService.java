@@ -29,4 +29,6 @@ public interface LoanService {
     BigDecimal calculateTotalDisbursedLoan(String cooperativeId);
 
     BigDecimal calculateTotalRepaidLoan(String cooperativeId);
+
+    BigDecimal calculateTotalObtainedByMember(String memberId);
 }

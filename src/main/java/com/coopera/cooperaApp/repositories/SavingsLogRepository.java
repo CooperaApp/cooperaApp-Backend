@@ -18,4 +18,10 @@ public interface SavingsLogRepository extends JpaRepository<SavingsLog, Integer>
 
     @Query("SELECT SUM(s.amountSaved) FROM SavingsLog s WHERE s.cooperativeId = :cooperativeId and s.savingsStatus = com.coopera.cooperaApp.enums.SavingsStatus.SUCCESSFUL")
     BigDecimal calculateTotalCooperativeSavings(@Param("cooperativeId") String cooperativeId);
+
+
+    @Query("SELECT SUM(s.amountSaved) FROM SavingsLog s WHERE s.memberId = :memberId and s.savingsStatus = com.coopera.cooperaApp.enums.SavingsStatus.SUCCESSFUL")
+    BigDecimal calculateTotalMemberSavings(@Param("memberId") String memberId);
+
+
 }
