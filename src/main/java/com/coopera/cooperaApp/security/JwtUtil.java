@@ -47,6 +47,7 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(String id) {
+        System.out.println();
 //        roles.add(newRole);
 //        Map<String, String> map = new HashMap<>();
 //        int number = 1;

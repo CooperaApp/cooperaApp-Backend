@@ -30,7 +30,7 @@ public class AppUtils {
            """;
     public static final String PASSWORD_RESET_FAILED="Password Reset Failed";
     public static final String PASSWORD_RESET_SUCCESSFUL = "Password reset has been successful";
-    public static final String FRONTEND_URL = "localhost:3000/";
+    public static final String FRONTEND_URL = "http://localhost:5173/";
    public static final String COOPERATIVE_WITH_ID_NOT_FOUND = "Cooperative with ID %s not found";
     public static final String MEMBER_WITH_ID_NOT_FOUND = "Member with ID %s not found";
    public static final String COOPERATIVE_UPDATE_FAILED= "Cooperative update failed";

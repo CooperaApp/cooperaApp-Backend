@@ -18,23 +18,14 @@ public class RegisterMemberRequest {
     @Size(min = 2, message = "Last name should have at least 2 letters.")
     private String lastName;
 
-    @NotBlank
-    @Email
-    private String email;
 
     @NotBlank
     @Size(min = 8)
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "Password must contain at least one lowercase letter, one uppercase letter, and one digit.")
     private String password;
 
-    @NotBlank
-    private String position;
-
-    @NotBlank
-    @Size(min = 11, message = "Phone number must have at least 11 characters")
-    private String phoneNumber;
 
     private String token;
-    private String cooperativeId;
+
 
 }

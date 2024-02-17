@@ -2,9 +2,12 @@ package com.coopera.cooperaApp.services.member;
 
 import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
+import com.coopera.cooperaApp.dtos.response.MemberDashboardStatistic;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Member;
+import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
+import com.coopera.cooperaApp.services.loanServices.LoanService;
 
 import java.util.List;
 
@@ -30,6 +33,8 @@ public interface MemberService {
 
 
     Long getNumberOfMembersByCooperativeId(String id);
+
+    MemberDashboardStatistic getMemberDashboardStatistic(SavingsService savingsService, LoanService loanService);
 
 
 

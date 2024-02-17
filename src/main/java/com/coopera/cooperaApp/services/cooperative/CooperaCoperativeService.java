@@ -83,7 +83,6 @@ public class CooperaCoperativeService implements CooperativeService {
         Cooperative cooperative = new Cooperative();
         cooperative.setEmail(request.getEmail());
         cooperative.setName(request.getName());
-        cooperative.setLogo(request.getLogo());
         cooperative.setCompany(company);
         cooperative.setPassword(passwordEncoder.encode(request.getPassword()));
         cooperative.setDateCreated(LocalDateTime.now());
@@ -162,6 +161,7 @@ public class CooperaCoperativeService implements CooperativeService {
         if (decodedJWT == null) throw new CooperaException(PASSWORD_RESET_FAILED);
         Claim claim = decodedJWT.getClaim("cooperativeId");
         String id = claim.asString();
+        System.out.println("ID........"+id);
         Cooperative cooperative = cooperativeRepository.findById(id).orElseThrow(() ->
                 new CooperaException(String.format(COOPERATIVE_WITH_ID_NOT_FOUND ,id)));
         cooperative.setPassword(passwordEncoder.encode(newPassword));
@@ -219,7 +219,7 @@ public class CooperaCoperativeService implements CooperativeService {
 
     private JsonPatch buildUpdatePatch(UpdateCooperativeRequest updateRequest) throws IllegalAccessException, JsonPointerException {
         List<JsonPatchOperation> operations = new ArrayList<>();
-        List<String> updateFields = List.of("name", "email", "logo", "companyName", "address", "interestRate", "loanEligibilityRate");
+        List<String> updateFields = List.of("name", "logo", "companyName", "address", "interestRate", "loanEligibilityRate");
         Field[] fields = updateRequest.getClass().getDeclaredFields();
 
         buildPatchOperations(updateRequest, operations, updateFields, fields);

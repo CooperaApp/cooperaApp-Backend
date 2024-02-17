@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.coopera.cooperaApp.dtos.requests.EmailDetails;
 import com.coopera.cooperaApp.dtos.requests.PasswordResetRequest;
 import com.coopera.cooperaApp.dtos.requests.RegisterMemberRequest;
+import com.coopera.cooperaApp.dtos.response.MemberDashboardStatistic;
 import com.coopera.cooperaApp.dtos.response.MemberResponse;
 import com.coopera.cooperaApp.enums.Role;
 import com.coopera.cooperaApp.exceptions.CooperaException;
@@ -15,7 +16,9 @@ import com.coopera.cooperaApp.models.Member;
 import com.coopera.cooperaApp.repositories.MemberRepository;
 import com.coopera.cooperaApp.security.JwtUtil;
 import com.coopera.cooperaApp.services.Mail.MailService;
+import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
+import com.coopera.cooperaApp.services.loanServices.LoanService;
 import com.coopera.cooperaApp.utilities.AppUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,13 +48,11 @@ public class CooperaMemberService implements MemberService {
     public final JwtUtil jwtUtil;
 
     public MemberResponse registerMember(RegisterMemberRequest request) throws CooperaException {
-        Map<String, Claim> claims = extractClaimsFromToken(request.getToken());
-        Claim memberId = claims.get("memberId");
         Map<String, Claim> claimMap = extractClaimsFromToken(request.getToken());
         Claim cooperativeId = claimMap.get("cooperativeId");
-        request.setCooperativeId(cooperativeId.asString());
-        checkIfMemberExistByEmail(request.getEmail());
-        Member newMember = initializeNewMember(request);
+        Claim email = claimMap.get("email");
+        checkIfMemberExistByEmail(email.asString());
+        Member newMember = initializeNewMember(request,email.asString(), cooperativeId.asString());
         var savedMember = memberRepository.save(newMember);
         if (savedMember.getId() == null) throw new CooperaException("Member Registration failed");
         Optional<Cooperative> optionalCooperative = cooperativeService.findById(cooperativeId.asString());
@@ -114,24 +115,35 @@ public class CooperaMemberService implements MemberService {
         return memberRepository.countAllByCooperativeId(cooperativeId);
     }
 
+    @Override
+    public MemberDashboardStatistic getMemberDashboardStatistic(SavingsService savingsService, LoanService loanService) {
+        String memberId = retrieveMemberEmail();
+        BigDecimal totalMemberSavings = savingsService.calculateTotalMemberSavings(memberId);
+        BigDecimal totalMemberLoans = loanService.calculateTotalObtainedByMember(memberId);
+
+        MemberDashboardStatistic memberDashboardStatistic = new MemberDashboardStatistic();
+        memberDashboardStatistic.setTotalSavings(totalMemberSavings);
+        memberDashboardStatistic.setTotalLoans(totalMemberLoans);
+
+        return memberDashboardStatistic;
+    }
+
     private String extractCooperativeName(String id) throws CooperaException {
         var cooperative = cooperativeService.findById(id);
         Cooperative foundCooperative = cooperative.orElseThrow(() -> new CooperaException("Cooperative Not found"));
         return foundCooperative.getName();
     }
-    private Member initializeNewMember(RegisterMemberRequest request) {
+    private Member initializeNewMember(RegisterMemberRequest request,String email, String cooperativeId) {
         Map<String, Claim> claims = extractClaimsFromToken(request.getToken());
         Claim memberId = claims.get("memberId");
         Member newMember = new Member();
         newMember.setFirstName(request.getFirstName());
         newMember.setId(memberId.asString());
-        newMember.setCooperativeId(request.getCooperativeId());
+        newMember.setCooperativeId(cooperativeId);
         newMember.setLastName(request.getLastName());
-        newMember.setEmail(request.getEmail());
+        newMember.setEmail(email);
         newMember.setBalance(BigDecimal.ZERO);
         newMember.setPassword(passwordEncoder.encode(request.getPassword()));
-        newMember.setPosition(request.getPosition());
-        newMember.setPhoneNumber(request.getPhoneNumber());
         newMember.getRoles().add(Role.MEMBER);
         return newMember;
     }

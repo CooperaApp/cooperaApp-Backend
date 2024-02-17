@@ -29,4 +29,6 @@ public interface SavingsService {
 
     BigDecimal calculateTotalCooperativeSavings(String cooperativeId);
 
+    BigDecimal calculateTotalMemberSavings(String memberId);
+
 }

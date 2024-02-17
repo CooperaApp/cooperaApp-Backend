@@ -18,7 +18,6 @@ public class UpdateCooperativeRequest {
 
     private String name;
     private String logo;
-    private String email;
     private String companyName;
     private String address;
     private Double interestRate;

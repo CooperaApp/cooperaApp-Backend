@@ -1,3 +1,4 @@
+
 package com.coopera.cooperaApp;
 
 import com.coopera.cooperaApp.dtos.requests.UpdateCooperativeRequest;
