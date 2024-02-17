@@ -2,6 +2,8 @@ package com.coopera.cooperaApp;
 
 import com.coopera.cooperaApp.dtos.requests.UpdateCooperativeRequest;
 import com.coopera.cooperaApp.models.AccountingEntry;
+import com.coopera.cooperaApp.models.Cooperative;
+import com.coopera.cooperaApp.models.Member;
 import com.coopera.cooperaApp.repositories.CooperativeRepository;
 import com.coopera.cooperaApp.repositories.LoanRepository;
 import com.coopera.cooperaApp.repositories.MemberRepository;
@@ -36,17 +38,13 @@ class CooperaAppApplicationTests {
     }
     @Test
     void coop() throws JsonProcessingException {
-		for (var each:cooperativeRepository.findAll()) {
-			if (each.getAccountingEntry().getInterestRate() == null){
-				each.getAccountingEntry().setInterestRate(0.5);
-				cooperativeRepository.save(each);
-				System.out.println(cooperativeRepository.findById(each.getId()));
-			}
+		for (Cooperative each:cooperativeRepository.findAll()) {
+			System.out.println(each);
 		}
     }
     @Test
     void member() throws JsonProcessingException {
-		for (var each:memberRepository.findAll()) {
+		for (Member each:memberRepository.findAll()) {
 			System.out.println(each);
 		}
     }

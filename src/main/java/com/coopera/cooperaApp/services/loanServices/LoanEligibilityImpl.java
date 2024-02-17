@@ -1,6 +1,5 @@
 package com.coopera.cooperaApp.services.loanServices;
 
-import com.coopera.cooperaApp.dtos.requests.LoanRequest;
 import com.coopera.cooperaApp.enums.EndorsementStatus;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.Endorsement;
@@ -29,7 +28,7 @@ public class LoanEligibilityImpl implements LoanEligibility{
 
     @Override
     public String endorseMember(String endorsementRequestId) throws CooperaException {
-        String endorserId = AppUtils.retrieveMemberId();
+        String endorserId = AppUtils.retrieveMemberEmail();
         Member endorser = memberService.findMemberById(endorserId);
         if (checkIfEndorserIsEligible(endorser)){
         Endorsement foundEndorsement = endorsementRepository.findById(endorsementRequestId).
@@ -43,7 +42,7 @@ public class LoanEligibilityImpl implements LoanEligibility{
 
     @Override
     public String rejectMember(String endorsementRequestId) throws CooperaException {
-        String endorserId = AppUtils.retrieveMemberId();
+        String endorserId = AppUtils.retrieveMemberEmail();
         Member endorser = memberService.findMemberById(endorserId);
         if (checkIfEndorserIsEligible(endorser)){
             Endorsement foundEndorsement = endorsementRepository.findById(endorsementRequestId).
@@ -60,7 +59,7 @@ public class LoanEligibilityImpl implements LoanEligibility{
 
     @Override
     public Endorsement sendEndorsementRequest(String endorserId) throws CooperaException {
-        String endorseeId = AppUtils.retrieveMemberId();
+        String endorseeId = AppUtils.retrieveMemberEmail();
         Member requester = memberService.findMemberById(endorseeId);
         Member endorser = memberService.findMemberById(endorserId);
         log.info("THis is the IDs" + endorserId);
@@ -74,7 +73,7 @@ public class LoanEligibilityImpl implements LoanEligibility{
 
     @Override
     public List<Endorsement> findAllPendingEndorsementRequest(int page, int items) throws CooperaException {
-        String endorserId = AppUtils.retrieveMemberId();
+        String endorserId = AppUtils.retrieveMemberEmail();
         Member member = memberService.findMemberById(endorserId);
         System.out.println(member.getEmail() + "this is the member email");
         Pageable pageable = AppUtils.buildPageRequest(page, items);
@@ -85,7 +84,7 @@ public class LoanEligibilityImpl implements LoanEligibility{
 
     @Override
     public List<Endorsement> findAllAcceptedEndorsementRequest(int page, int items) throws CooperaException {
-        String endorserId = AppUtils.retrieveMemberId();
+        String endorserId = AppUtils.retrieveMemberEmail();
         Member member = memberService.findMemberById(endorserId);
         Pageable pageable = AppUtils.buildPageRequest(page, items);
         Page<Endorsement> endorsements = endorsementRepository.findEndorsementByEndorserEmailAndEndorsementStatus(member.getEmail(), EndorsementStatus.ACCEPT, pageable);

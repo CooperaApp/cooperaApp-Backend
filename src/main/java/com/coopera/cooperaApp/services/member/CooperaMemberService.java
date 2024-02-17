@@ -91,8 +91,13 @@ public class CooperaMemberService implements MemberService {
     }
 
     @Override
+    public Member findMemberByMail(String email) throws CooperaException {
+        return memberRepository.findByEmail(email).orElseThrow(() -> new CooperaException("Member Not Found"));
+    }
+
+    @Override
     public List<MemberResponse> findAllMembersByCooperativeId(int page, int items) {
-        String cooperativeId = retrieveCooperativeId();
+        String cooperativeId = retrieveCooperativeEmail();
         Pageable pageable = AppUtils.buildPageRequest(page, items);
         System.out.println("Items::>> "+items);
         Page<Member> memberPage = memberRepository.findAllByCooperativeId(cooperativeId, pageable);

@@ -22,7 +22,7 @@ public class CooperativeDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return cooperative.getId();
+        return cooperative.getEmail();
     }
 
     @Override

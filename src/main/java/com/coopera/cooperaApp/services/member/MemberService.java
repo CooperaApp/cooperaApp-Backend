@@ -22,6 +22,8 @@ public interface MemberService {
 
     Member findMemberById(String memberId) throws CooperaException;
 
+    Member findMemberByMail(String email) throws CooperaException;
+
     List<MemberResponse> findAllMembersByCooperativeId(int page, int items);
 
     List<Member> findAllMembersWithoutPagination();

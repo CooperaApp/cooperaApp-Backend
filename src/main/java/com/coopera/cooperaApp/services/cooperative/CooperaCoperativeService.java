@@ -46,7 +46,7 @@ import java.util.*;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
-import static com.coopera.cooperaApp.utilities.AppUtils.retrieveCooperativeId;
+import static com.coopera.cooperaApp.utilities.AppUtils.retrieveCooperativeEmail;
 
 @Service
 @AllArgsConstructor
@@ -62,26 +62,24 @@ public class CooperaCoperativeService implements CooperativeService {
     @Override
     public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request, MemberService memberService) throws CooperaException {
         validateRegistrationRequest(request);
-        if (cooperativeRepository.findByEmail(request.getEmail()) != null)
-            throw new CooperaException("Cooperative with eamil " + request.getEmail() + " already exists");
+        if(cooperativeRepository.findByEmail(request.getEmail()) != null) throw new CooperaException("Cooperative with eamil "+request.getEmail()+ " already exists");
         Company company = new Company();
         modelMapper.map(request, company);
-        Cooperative cooperative = initializeCooperativeData(request, company);
+        Cooperative cooperative = initializeCooperativeData(request,  company);
         cooperative.setId(generateId(request.getName()));
 
         System.out.println(cooperative);
 
         Cooperative savedCooperative = cooperativeRepository.save(cooperative);
-        if (savedCooperative.getId() == null) throw new CooperaException("Cooperative registration failed");
+        if(savedCooperative.getId() == null) throw new CooperaException("Cooperative registration failed");
         Long numberOfCooperativeMembers = memberService.getNumberOfMembersByCooperativeId(savedCooperative.getId());
         return RegisterCooperativeResponse.builder()
                 .name(savedCooperative.getName())
-                .id(savedCooperative.getId())
                 .numberOfMembers(numberOfCooperativeMembers).build();
 
     }
 
-    private Cooperative initializeCooperativeData(RegisterCooperativeRequest request, Company company) {
+    private  Cooperative initializeCooperativeData(RegisterCooperativeRequest request, Company company) {
         Cooperative cooperative = new Cooperative();
         cooperative.setEmail(request.getEmail());
         cooperative.setName(request.getName());
@@ -106,11 +104,11 @@ public class CooperaCoperativeService implements CooperativeService {
         }
     }
 
-    public String generateId(String name) {
+    public String generateId(String name){
         String firstPart = name.substring(0, 3);
         int currentYear = LocalDateTime.now().getYear();
         int sizeOfRepoPlusOne = cooperativeRepository.findAll().size() + 1;
-        return firstPart + "/" + currentYear + "/" + "00" + sizeOfRepoPlusOne;
+        return firstPart + "/" + currentYear + "/" + "00"+sizeOfRepoPlusOne;
     }
 
 
@@ -120,26 +118,29 @@ public class CooperaCoperativeService implements CooperativeService {
     }
 
     @Override
+    public Optional<Cooperative> findByEmail(String email) {
+        return Optional.ofNullable(cooperativeRepository.findByEmail(email));
+    }
+
+    @Override
     public Cooperative findCooperativeByMail(String mail) {
         return cooperativeRepository.findByEmail(mail);
     }
-
     @Override
     public String forgotPassword(String email) throws CooperaException {
         Cooperative cooperative = findCooperativeByMail(email);
         if (cooperative == null) {
-            throw new CooperaException(String.format(INVALID_COOPERATIVE_EMAIL, email));
+            throw new CooperaException(String.format(INVALID_COOPERATIVE_EMAIL,email));
         }
-        String link = generateLink(cooperative.getId());
+        String link =generateLink(cooperative.getId());
         EmailDetails emailDetails = new EmailDetails();
-        emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT);
+        emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT );
         emailDetails.setRecipient(cooperative.getEmail());
-        emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT, cooperative.getName(), link));
+        emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT,cooperative.getName(),link));
         return mailService.mimeMessage(emailDetails);
     }
-
     private String generateLink(String cooperativeId) {
-        return FRONTEND_URL + "reset-password?token=" +
+        return FRONTEND_URL+"reset-password?token=" +
                 JWT.create()
                         .withIssuedAt(Instant.now())
                         .withExpiresAt(Instant.now().plusSeconds(600L))
@@ -153,18 +154,16 @@ public class CooperaCoperativeService implements CooperativeService {
     }
 
     public String resetPassword(PasswordResetRequest passwordResetRequest) throws CooperaException {
-        if (!Objects.equals(passwordResetRequest.getNewPassword(), passwordResetRequest.getConfirmPassword()))
-            throw new CooperaException("Password do not match!");
+        if(!Objects.equals(passwordResetRequest.getNewPassword(), passwordResetRequest.getConfirmPassword())) throw  new CooperaException("Password do not match!");
         String newPassword = passwordResetRequest.getNewPassword();
 
         String token = passwordResetRequest.getToken();
-        DecodedJWT decodedJWT = jwtUtil.validateToken(token);
+        DecodedJWT decodedJWT =jwtUtil.validateToken(token);
         if (decodedJWT == null) throw new CooperaException(PASSWORD_RESET_FAILED);
         Claim claim = decodedJWT.getClaim("cooperativeId");
         String id = claim.asString();
-        System.out.println(id);
         Cooperative cooperative = cooperativeRepository.findById(id).orElseThrow(() ->
-                new CooperaException(String.format(COOPERATIVE_WITH_ID_NOT_FOUND, id)));
+                new CooperaException(String.format(COOPERATIVE_WITH_ID_NOT_FOUND ,id)));
         cooperative.setPassword(passwordEncoder.encode(newPassword));
         cooperativeRepository.save(cooperative);
         return PASSWORD_RESET_SUCCESSFUL;
@@ -173,8 +172,8 @@ public class CooperaCoperativeService implements CooperativeService {
     @Override
     public CooperativeDashboardStatistic getDashboardStatistics(SavingsService savingsService, LoanService loanService) {
         System.out.println("Reached");
-        String cooperativeId = retrieveCooperativeId();
-        System.out.println("cooperativeId::>> " + cooperativeId);
+        String cooperativeId = retrieveCooperativeEmail();
+        System.out.println("cooperativeId::>> "+cooperativeId);
         CooperativeDashboardStatistic cooperativeDashboardStatistic = new CooperativeDashboardStatistic();
         BigDecimal totalCooperativeSavings = savingsService.calculateTotalCooperativeSavings(cooperativeId);
         BigDecimal totalDisbursedLoan = loanService.calculateTotalDisbursedLoan(cooperativeId);
@@ -193,10 +192,9 @@ public class CooperaCoperativeService implements CooperativeService {
         return null;
 
     }
-
     public CooperativeResponse updateCooperativeDetails(UpdateCooperativeRequest updateRequest)
             throws CooperaException, JsonPointerException, IllegalAccessException {
-        String id = retrieveCooperativeId();
+        String id= retrieveCooperativeEmail();
         Optional<Cooperative> foundCooperative = cooperativeRepository.findById(id);
         Cooperative cooperative = foundCooperative.orElseThrow(() ->
                 new CooperaException(String.format(COOPERATIVE_WITH_ID_NOT_FOUND, id)));
@@ -232,20 +230,21 @@ public class CooperaCoperativeService implements CooperativeService {
         for (Field field : fields) {
             field.setAccessible(true);
 
-            if (field.get(updateRequest) != null && updateFields.contains(field.getName())) {
-                if (field.getName().contains("company") || field.getName().contains("address")) {
+            if (field.get(updateRequest)!=null&& updateFields.contains(field.getName())){
+                if (field.getName().contains("company")||field.getName().contains("address")){
                     var operation = new ReplaceOperation(
-                            new JsonPointer("/company/" + field.getName()),
+                            new JsonPointer("/company/"+field.getName()),
                             new TextNode(field.get(updateRequest).toString())
                     );
                     operations.add(operation);
-                } else if (field.getName().contains("Rate")) {
+                }else if(field.getName().contains("Rate")){
                     var operation = new ReplaceOperation(
-                            new JsonPointer("/accountingEntry/" + field.getName()),
+                            new JsonPointer("/accountingEntry/"+field.getName()),
                             new TextNode(field.get(updateRequest).toString())
                     );
                     operations.add(operation);
-                } else {
+                }
+                else{
                     var operation = new ReplaceOperation(
                             new JsonPointer("/" + field.getName()),
                             new TextNode(field.get(updateRequest).toString())

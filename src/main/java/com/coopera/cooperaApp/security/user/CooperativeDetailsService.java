@@ -15,7 +15,7 @@ public class CooperativeDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-       Optional<Cooperative> cooperative =  cooperativeService.findById(username);
+       Optional<Cooperative> cooperative = cooperativeService.findByEmail(username);
         return cooperative.map(CooperativeDetails::new).orElse(null);
     }
 }
