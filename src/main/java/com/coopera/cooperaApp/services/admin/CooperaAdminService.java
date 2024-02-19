@@ -48,7 +48,7 @@ public class CooperaAdminService implements AdminService{
     }
 
     private static String generateInviteLink(String memberId, String memberEmail,  String cooperativeId, String secret) {
-        return "localhost:3000/membersLogin?token=" + JWT.create().withIssuedAt(Instant.now()).
+        return "localhost:3000/membersRegister?token=" + JWT.create().withIssuedAt(Instant.now()).
                 withClaim("memberId", memberId).
                 withClaim("cooperativeId", cooperativeId).
                 withClaim("memberEmail", memberEmail).

@@ -19,7 +19,6 @@ import java.util.Set;
 @Builder
 @ToString
 public class MemberResponse {
-    private String name;
     private List<Role> role;
     private String id;
     private String cooperativeId;
