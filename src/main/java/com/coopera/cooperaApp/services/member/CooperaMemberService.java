@@ -143,6 +143,7 @@ public class CooperaMemberService implements MemberService {
         newMember.setLastName(request.getLastName());
         newMember.setEmail(email);
         newMember.setBalance(BigDecimal.ZERO);
+        newMember.setPhoneNumber(request.getPhoneNumber());
         newMember.setPassword(passwordEncoder.encode(request.getPassword()));
         newMember.getRoles().add(Role.MEMBER);
         return newMember;

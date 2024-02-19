@@ -24,6 +24,9 @@ public class RegisterMemberRequest {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$", message = "Password must contain at least one lowercase letter, one uppercase letter, and one digit.")
     private String password;
 
+    @NotBlank
+    private String phoneNumber;
+
 
     private String token;
 
