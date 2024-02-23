@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
@@ -157,10 +159,9 @@ public class CooperaMemberService implements MemberService {
     }
 
     private void checkIfMemberExistByEmail(String emailAddress) throws CooperaException {
-        Optional<Member> existingMember = memberRepository.findByEmail(emailAddress);
-        if (existingMember.isPresent()) {
-            throw new CooperaException("Member with this email already exists");
-        }
+        var existingMember =findAllMembersWithoutPagination();
+       var member= existingMember.stream().filter(c->c.getEmail().equals(emailAddress)).findAny().orElseThrow(() -> new CooperaException("Member with this email already exists"));
+
     }
 
     private Map<String, Claim> extractClaimsFromToken(String token) {
