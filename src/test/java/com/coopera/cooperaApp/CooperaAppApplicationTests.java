@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootTest
 class CooperaAppApplicationTests {
@@ -27,6 +28,8 @@ class CooperaAppApplicationTests {
     public CooperativeRepository cooperativeRepository;
     @Autowired
     public ObjectMapper objectMapper;
+    @Autowired
+    public PasswordEncoder passwordEncoder;
 
     @Test
     void contextLoads() throws JsonProcessingException {
@@ -40,6 +43,11 @@ class CooperaAppApplicationTests {
     @Test
     void coop() throws JsonProcessingException {
 		for (Cooperative each:cooperativeRepository.findAll()) {
+			if (each.getEmail().equalsIgnoreCase("moyinoluwamichaelz@gmail.com")){
+				String password = passwordEncoder.encode("Password@123");
+				each.setPassword(password);
+				cooperativeRepository.save(each);
+			}
 			System.out.println(each);
 		}
     }

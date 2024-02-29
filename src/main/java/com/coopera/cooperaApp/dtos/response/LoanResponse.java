@@ -25,6 +25,7 @@ import java.util.List;
 public class LoanResponse {
     private String id;
     private String memberName;
+    private String memberEmail;
     private String description;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
