@@ -40,15 +40,18 @@ public class CooperaAdminService implements AdminService{
         String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         List<String> requestList = recipient.getRecipientEmail();
         int successCount = 0;
-        String link = generateInviteLink(memberId, coopId, jwtUtil.getSecret());
+        for (int i = 0; i < requestList.size() ; i++) {
+        String link = generateInviteLink(memberId, requestList.get(i),  coopId, jwtUtil.getSecret());
         successCount = sendInviteToRecipient(requestList, link, successCount, coopId, cooperativeService);
+        }
         return emailSenderResponse(successCount);
     }
 
-    private static String generateInviteLink(String memberId, String cooperativeId, String secret) {
-        return "localhost:3000/membersLogin?token=" + JWT.create().withIssuedAt(Instant.now()).
+    private static String generateInviteLink(String memberId, String memberEmail,  String cooperativeId, String secret) {
+        return "localhost:3000/membersRegister?token=" + JWT.create().withIssuedAt(Instant.now()).
                 withClaim("memberId", memberId).
                 withClaim("cooperativeId", cooperativeId).
+                withClaim("memberEmail", memberEmail).
                 withExpiresAt(Instant.now().plusSeconds(864000L))
                 .sign(Algorithm.HMAC512(secret.getBytes()));
     }
@@ -56,13 +59,14 @@ public class CooperaAdminService implements AdminService{
 
     private int sendInviteToRecipient(List<String> requestList, String link, int successCount, String coopId, CooperativeService cooperativeService) throws CooperaException {
         System.out.println("Link::>> "+link);
+        System.out.println("showing stuff");
         for (String recipientMail : requestList) {
             Cooperative cooperative = cooperativeService.findById(coopId).get();
             String template = getFileTemplateFromClasspath(MEMBER_INVITATION_HTML_TEMPLATE_LOCATION);
             String mailBody = String.format(template, cooperative.getName(), cooperative.getCompany().getCompanyName(), link);
             EmailDetails emailDetails = new EmailDetails();
             emailDetails.setRecipient(recipientMail);
-            emailDetails.setMsgBody(mailBody);
+            emailDetails.setMsgBody(mailBody + " " + link);
             emailDetails.setSubject(String.format(INVITATION_MAIL_SUBJECT, cooperative.getName()));
             String response = mailService.mimeMessage(emailDetails);
             if (response.equals("success")) successCount++;

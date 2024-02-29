@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
@@ -50,7 +52,7 @@ public class CooperaMemberService implements MemberService {
     public MemberResponse registerMember(RegisterMemberRequest request) throws CooperaException {
         Map<String, Claim> claimMap = extractClaimsFromToken(request.getToken());
         Claim cooperativeId = claimMap.get("cooperativeId");
-        Claim email = claimMap.get("email");
+        Claim email = claimMap.get("memberEmail");
         checkIfMemberExistByEmail(email.asString());
         Member newMember = initializeNewMember(request,email.asString(), cooperativeId.asString());
         var savedMember = memberRepository.save(newMember);
@@ -59,7 +61,14 @@ public class CooperaMemberService implements MemberService {
         Cooperative cooperative = optionalCooperative.orElseThrow(() -> new CooperaException(String.format("Cooperative with %s id not found", cooperativeId)));
         cooperativeService.save(cooperative);
         log.info(memberRepository.findAll().size() + "this is all members");
-        return MemberResponse.builder().id(savedMember.getId()).role(savedMember.getRoles()).name(savedMember.getFirstName() + " " + savedMember.getLastName()).build();
+        return MemberResponse.builder().
+                id(savedMember.getId()).
+                firstName(savedMember.getFirstName()).
+                lastName(savedMember.getLastName()).
+                email(savedMember.getEmail()).
+                role(savedMember.getRoles()).
+                cooperativeId(savedMember.getCooperativeId()).
+                build();
     }
 
 
@@ -68,7 +77,7 @@ public class CooperaMemberService implements MemberService {
         foundMember.orElseThrow(() -> new CooperaException("Could not find member with " + id));
         foundMember.get().getRoles().add(Role.ADMIN);
         var savedMember = memberRepository.save(foundMember.get());
-        return MemberResponse.builder().id(savedMember.getId()).role(savedMember.getRoles()).name(savedMember.getFirstName() + " " + savedMember.getLastName()).build();
+        return MemberResponse.builder().id(savedMember.getId()).role(savedMember.getRoles()).firstName(savedMember.getFirstName()).lastName(savedMember.getLastName()).build();
     }
 
     @Override
@@ -82,7 +91,7 @@ public class CooperaMemberService implements MemberService {
         if (foundMember.isEmpty()) {
             throw new CooperaException("Member with id " + memberId + " not found");
         }
-        return MemberResponse.builder().id(foundMember.get().getId()).cooperativeId(foundMember.get().getCooperativeId()).role(foundMember.get().getRoles()).name(foundMember.get().getFirstName() + " " + foundMember.get().getLastName()).build();
+        return MemberResponse.builder().id(foundMember.get().getId()).cooperativeId(foundMember.get().getCooperativeId()).role(foundMember.get().getRoles()).firstName(foundMember.get().getFirstName()).lastName(foundMember.get().getLastName()).build();
 
     }
 
@@ -143,16 +152,16 @@ public class CooperaMemberService implements MemberService {
         newMember.setLastName(request.getLastName());
         newMember.setEmail(email);
         newMember.setBalance(BigDecimal.ZERO);
+        newMember.setPhoneNumber(request.getPhoneNumber());
         newMember.setPassword(passwordEncoder.encode(request.getPassword()));
         newMember.getRoles().add(Role.MEMBER);
         return newMember;
     }
 
     private void checkIfMemberExistByEmail(String emailAddress) throws CooperaException {
-        Optional<Member> existingMember = memberRepository.findByEmail(emailAddress);
-        if (existingMember.isPresent()) {
-            throw new CooperaException("Member with this email already exists");
-        }
+        var existingMember =findAllMembersWithoutPagination();
+       var member= existingMember.stream().filter(c->c.getEmail().equals(emailAddress)).findAny().orElseThrow(() -> new CooperaException("Member with this email already exists"));
+
     }
 
     private Map<String, Claim> extractClaimsFromToken(String token) {
