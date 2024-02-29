@@ -28,6 +28,7 @@ public class CooperativeController {
     private final MemberService memberService;
     private final SavingsService savingsService;
     private final LoanService loanService;
+
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<?>> registerCooperative(@RequestBody RegisterCooperativeRequest request) {
         try {
@@ -44,8 +45,9 @@ public class CooperativeController {
                     .build());
         }
     }
+
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPassWord(@RequestBody ForgotPasswordRequest request){
+    public ResponseEntity<?> forgotPassWord(@RequestBody ForgotPasswordRequest request) {
         try {
             var response = cooperativeService.forgotPassword(request.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
@@ -60,14 +62,14 @@ public class CooperativeController {
                     .build());
         }
     }
+
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassWord(@RequestBody PasswordResetRequest passwordResetRequest){
+    public ResponseEntity<?> resetPassWord(@RequestBody PasswordResetRequest passwordResetRequest) {
         try {
             var response = cooperativeService.resetPassword(passwordResetRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
                     .message(PASSWORD_RESET_SUCCESSFUL)
-                    .success
-                            (true)
+                    .success(true)
                     .data(response)
                     .build());
         } catch (CooperaException e) {
@@ -92,7 +94,7 @@ public class CooperativeController {
     public ResponseEntity<?> updateCooperativeInfo(@RequestBody UpdateCooperativeRequest updateRequest) throws Exception {
         System.out.println("Controller request: " + updateRequest);
         try {
-            CooperativeResponse response =  cooperativeService.updateCooperativeDetails(updateRequest);
+            CooperativeResponse response = cooperativeService.updateCooperativeDetails(updateRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
                     .message(COOPERATIVE_UPDATE_SUCCESSFUL)
                     .success(true)

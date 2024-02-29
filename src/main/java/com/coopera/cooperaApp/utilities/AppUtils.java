@@ -56,14 +56,13 @@ public class AppUtils {
     public static final BigDecimal balanceRequiredToEndorse = BigDecimal.valueOf(50_000L);
     public static final String INTEREST_CANNOT_BE_CALCULATED = "Interest cannot be calculated. Please, update the cooperative's interest rate";
 
-    public static String retrieveCooperativeEmail(){
+    public static String retrieveCooperativeId(){
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         return cooperativeId.substring(1, cooperativeId.length() - 1);
     }
 
-    public static String retrieveMemberEmail(){
+    public static String retrieveMemberId(){
         String memberId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        System.out.println("let me just s");
         return memberId.substring(1, memberId.length() - 1);
     }
     public static String retrieveCooperativeIdForAMember(){

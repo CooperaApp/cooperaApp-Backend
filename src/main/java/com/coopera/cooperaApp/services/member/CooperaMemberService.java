@@ -107,7 +107,7 @@ public class CooperaMemberService implements MemberService {
 
     @Override
     public List<MemberResponse> findAllMembersByCooperativeId(int page, int items) {
-        String cooperativeId = retrieveCooperativeEmail();
+        String cooperativeId = retrieveCooperativeId();
         Pageable pageable = AppUtils.buildPageRequest(page, items);
         System.out.println("Items::>> "+items);
         Page<Member> memberPage = memberRepository.findAllByCooperativeId(cooperativeId, pageable);
@@ -126,7 +126,7 @@ public class CooperaMemberService implements MemberService {
 
     @Override
     public MemberDashboardStatistic getMemberDashboardStatistic(SavingsService savingsService, LoanService loanService) {
-        String memberId = retrieveMemberEmail();
+        String memberId = retrieveMemberId();
         BigDecimal totalMemberSavings = savingsService.calculateTotalMemberSavings(memberId);
         BigDecimal totalMemberLoans = loanService.calculateTotalObtainedByMember(memberId);
 

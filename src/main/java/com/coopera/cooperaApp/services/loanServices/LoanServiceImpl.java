@@ -34,7 +34,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Loan requestLoan(LoanRequest loanRequest, MemberService memberService) throws CooperaException {
-        String memberId = retrieveMemberEmail();
+        String memberId = retrieveMemberId();
         MemberResponse foundMemberResponse = memberService.findById(memberId);
         Member foundMember = memberService.findMemberById(memberId);
         Endorsement firstEndorsement = loaneligibility.sendEndorsementRequest(loanRequest.getFirstEndorserId());
@@ -47,6 +47,7 @@ public class LoanServiceImpl implements LoanService {
         }
         loan.setCooperativeId(foundMember.getCooperativeId());
         loan.setMemberId(memberId);
+        loan.setMemberEmail(foundMember.getEmail());
         loan.setMemberName(foundMemberResponse.getName());
         loan.setEndorsement(List.of(firstEndorsement, secondEndorsement));
         System.out.println(loan.getEndorsement().size());
@@ -102,7 +103,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<Loan> findByMemberId(MemberService memberService) throws CooperaException, LoanException {
-        String memberId = retrieveMemberEmail();
+        String memberId = retrieveMemberId();
         return loanRepository.findAllByMemberId(memberId).orElseThrow(
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, memberId))
         );
@@ -111,7 +112,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<Loan> findByCooperativeId(CooperativeService cooperativeService) throws LoanException {
-        String cooperativeId = retrieveCooperativeEmail();
+        String cooperativeId = retrieveCooperativeId();
         cooperativeService.findById(cooperativeId);
         return loanRepository.findAllByCooperativeId(cooperativeId).orElseThrow(
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, cooperativeService))
@@ -120,7 +121,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<Loan> findByMemberIdAndStatus(LoanStatus loanStatus, MemberService memberService) throws CooperaException, LoanException {
-        String memberId = retrieveMemberEmail();
+        String memberId = retrieveMemberId();
         memberService.findById(memberId);
         return loanRepository.findAllByMemberIdAndLoanStatus(memberId, loanStatus).orElseThrow(
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, memberId))
@@ -129,7 +130,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<Loan> findByCooperativeIdAndStatus(LoanStatus loanStatus, CooperativeService cooperativeService) throws LoanException {
-        String cooperativeId = retrieveCooperativeEmail();
+        String cooperativeId = retrieveCooperativeId();
         cooperativeService.findById(cooperativeId);
         return loanRepository.findAllByCooperativeIdAndLoanStatus(cooperativeId, loanStatus).orElseThrow(
                 () -> new LoanException(String.format(LOAN_NOT_FOUND, cooperativeId))
