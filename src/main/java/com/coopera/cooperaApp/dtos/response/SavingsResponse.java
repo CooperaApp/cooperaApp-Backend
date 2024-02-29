@@ -22,6 +22,7 @@ public class SavingsResponse {
     private LocalDateTime timeSaved;
 
     private String memberName;
+    private String memberEmail;
 
     private SavingsStatus savingsStatus;
 }

@@ -1,6 +1,7 @@
 package com.coopera.cooperaApp.services.SavingsServices;
 
 import com.coopera.cooperaApp.dtos.requests.SaveRequest;
+import com.coopera.cooperaApp.dtos.response.MemberResponse;
 import com.coopera.cooperaApp.enums.SavingsStatus;
 import com.coopera.cooperaApp.exceptions.CooperaException;
 import com.coopera.cooperaApp.models.SavingsLog;
@@ -26,14 +27,16 @@ public class SavingsServiceImpl implements SavingsService {
     public SavingsLog saveToCooperative(SaveRequest saveRequest, MemberService memberService) throws CooperaException {
         if (!checkIfAmountToSaveIsValid(saveRequest.getAmountToSave())) throw new CooperaException("Invalid Amount");
         BigDecimal amount = new BigDecimal(saveRequest.getAmountToSave());
-        String memberEmail = retrieveMemberEmail();
+        String memberEmail = retrieveMemberId();
         String memberId = memberService.findMemberByMail(memberEmail).getId();
         String cooperativeId = memberService.findMemberByMail(memberEmail).getCooperativeId();
+        MemberResponse foundMember = memberService.findById(memberId);
         SavingsLog newSavingsLog = SavingsLog.builder()
                 .amountSaved(amount)
                 .timeSaved(LocalDateTime.now())
-                .memberName(extractMemberName(memberId, memberService))
+                .memberName(foundMember.getName())
                 .memberId(memberId)
+                .memberEmail(foundMember.getEmail())
                 .cooperativeId(cooperativeId)
                 .savingsStatus(SavingsStatus.PENDING)
                 .build();
@@ -49,7 +52,7 @@ public class SavingsServiceImpl implements SavingsService {
 
     @Override
     public List<SavingsLog> findByMemberId(MemberService memberService) throws CooperaException {
-        String memberId = retrieveMemberEmail();
+        String memberId = retrieveMemberId();
         memberService.findById(memberId);
         return savingsLogRepository.findAllByMemberId(memberId).orElseThrow(
                 () -> new CooperaException(String.format(SAVINGS_NOT_FOUND, memberId))
@@ -58,7 +61,7 @@ public class SavingsServiceImpl implements SavingsService {
 
     @Override
     public List<SavingsLog> findByCooperativeId(CooperativeService cooperativeService) throws CooperaException {
-        String cooperativeId = retrieveCooperativeEmail();
+        String cooperativeId = retrieveCooperativeId();
         cooperativeService.findById(cooperativeId);
         return savingsLogRepository.findAllByCooperativeId(cooperativeId).orElseThrow(
                 () -> new CooperaException(String.format(SAVINGS_NOT_FOUND, cooperativeService))
@@ -74,7 +77,7 @@ public class SavingsServiceImpl implements SavingsService {
 
     @Override
     public List<SavingsLog> findByMemberIdAndStatus(SavingsStatus savingsStatus, MemberService memberService) throws CooperaException {
-        String memberId = retrieveMemberEmail();
+        String memberId = retrieveMemberId();
         memberService.findById(memberId);
         return savingsLogRepository.findAllByMemberIdAndSavingsStatus(memberId, savingsStatus).orElseThrow(
                 () -> new CooperaException(String.format(SAVINGS_NOT_FOUND, memberId))
@@ -84,7 +87,7 @@ public class SavingsServiceImpl implements SavingsService {
 
     @Override
     public List<SavingsLog> findByCooperativeIdAndStatus(SavingsStatus savingsStatus, CooperativeService cooperativeService) throws CooperaException {
-        String cooperativeId = retrieveCooperativeEmail();
+        String cooperativeId = retrieveCooperativeId();
         cooperativeService.findById(cooperativeId);
         return savingsLogRepository.findAllByCooperativeIdAndSavingsStatus(cooperativeId, savingsStatus).orElseThrow(
                 () -> new CooperaException(String.format(SAVINGS_NOT_FOUND, cooperativeId))
@@ -101,12 +104,6 @@ public class SavingsServiceImpl implements SavingsService {
     public BigDecimal calculateTotalMemberSavings(String memberId) {
         BigDecimal totalMemberSavings = savingsLogRepository.calculateTotalMemberSavings(memberId);
         return totalMemberSavings == null ? BigDecimal.ZERO : totalMemberSavings;
-    }
-
-
-    private String extractMemberName(String id, MemberService memberService) throws CooperaException {
-        var response = memberService.findById(id);
-        return response.getName();
     }
 
 
