@@ -43,7 +43,7 @@ public class SecurityConfig {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(customizer -> customizer.configurationSource(getUrlBasedCorsConfigurationSource()))
+                .cors(Customizer.withDefaults())
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authorizationFilter, CooperaAuthenticationFilter.class)
                 .exceptionHandling(
@@ -72,7 +72,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOrigins(List.of("*"));
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        configurationSource.registerCorsConfiguration("/api/**", corsConfig);
+        configurationSource.registerCorsConfiguration("/*/**", corsConfig);
         return configurationSource;
     }
 
