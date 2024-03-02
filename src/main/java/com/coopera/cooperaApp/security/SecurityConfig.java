@@ -41,7 +41,7 @@ public class SecurityConfig {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(customizer -> customizer.configurationSource(getUrlBasedCorsConfigurationSource()))
+                .cors(Customizer.withDefaults())
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authorizationFilter, CooperaAuthenticationFilter.class)
                 .exceptionHandling(
