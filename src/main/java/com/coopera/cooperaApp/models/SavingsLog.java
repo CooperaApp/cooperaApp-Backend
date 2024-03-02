@@ -2,6 +2,7 @@ package com.coopera.cooperaApp.models;
 
 import com.coopera.cooperaApp.enums.SavingsStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -22,6 +23,8 @@ public class SavingsLog {
     private BigDecimal amountSaved;
     private LocalDateTime timeSaved;
     private String memberName;
+    @Email
+    private String memberEmail;
     private String memberId;
     private SavingsStatus savingsStatus;
 

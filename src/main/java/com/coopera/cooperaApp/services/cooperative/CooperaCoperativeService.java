@@ -46,7 +46,7 @@ import java.util.*;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
-import static com.coopera.cooperaApp.utilities.AppUtils.retrieveCooperativeEmail;
+import static com.coopera.cooperaApp.utilities.AppUtils.retrieveCooperativeId;
 
 @Service
 @AllArgsConstructor
@@ -127,15 +127,15 @@ public class CooperaCoperativeService implements CooperativeService {
     }
     @Override
     public String forgotPassword(String email) throws CooperaException {
-      Cooperative cooperative = findCooperativeByMail(email);
-      if (cooperative == null) {
-          throw new CooperaException(String.format(INVALID_COOPERATIVE_EMAIL,email));
-      }
-      String link =generateLink(cooperative.getId());
+        Cooperative cooperative = findCooperativeByMail(email);
+        if (cooperative == null) {
+            throw new CooperaException(String.format(INVALID_COOPERATIVE_EMAIL,email));
+        }
+        String link =generateLink(cooperative.getId());
         EmailDetails emailDetails = new EmailDetails();
-          emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT );
-          emailDetails.setRecipient(cooperative.getEmail());
-          emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT,cooperative.getName(),link));
+        emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT );
+        emailDetails.setRecipient(cooperative.getEmail());
+        emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT,cooperative.getName(),link));
         return mailService.mimeMessage(emailDetails);
     }
     private String generateLink(String cooperativeId) {
@@ -172,7 +172,7 @@ public class CooperaCoperativeService implements CooperativeService {
     @Override
     public CooperativeDashboardStatistic getDashboardStatistics(SavingsService savingsService, LoanService loanService) {
         System.out.println("Reached");
-        String cooperativeId = retrieveCooperativeEmail();
+        String cooperativeId = retrieveCooperativeId();
         System.out.println("cooperativeId::>> "+cooperativeId);
         CooperativeDashboardStatistic cooperativeDashboardStatistic = new CooperativeDashboardStatistic();
         BigDecimal totalCooperativeSavings = savingsService.calculateTotalCooperativeSavings(cooperativeId);
@@ -194,7 +194,7 @@ public class CooperaCoperativeService implements CooperativeService {
     }
     public CooperativeResponse updateCooperativeDetails(UpdateCooperativeRequest updateRequest)
             throws CooperaException, JsonPointerException, IllegalAccessException {
-        String id= retrieveCooperativeEmail();
+        String id= retrieveCooperativeId();
         Optional<Cooperative> foundCooperative = cooperativeRepository.findById(id);
         Cooperative cooperative = foundCooperative.orElseThrow(() ->
                 new CooperaException(String.format(COOPERATIVE_WITH_ID_NOT_FOUND, id)));

@@ -10,12 +10,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -48,6 +50,13 @@ public class SecurityConfig {
                         exceptionHandler -> exceptionHandler
                                 .authenticationEntryPoint(customAuthenticationFailureHandler::onAuthenticationFailure)
                 )
+                .exceptionHandling(
+                        exceptionHandling -> exceptionHandling
+                                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                    response.sendRedirect("/error");
+                                })
+                )
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/v1/cooperative/register", "/api/v1/admin/generateLink", "/api/v1/admin/testing", "/api/v1/member/save", "api/v1/member/register", "api/v1/loans/requestLoan","api/v1/cooperative/forgotPassword", "api/v1/cooperative/resetPassword", "api/v1/member/forgotPassword", "api/v1/member/resetPassword")
@@ -63,7 +72,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOrigins(List.of("*"));
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        configurationSource.registerCorsConfiguration("/api/**", corsConfig);
+        configurationSource.registerCorsConfiguration("/*/**", corsConfig);
         return configurationSource;
     }
 
