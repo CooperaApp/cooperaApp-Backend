@@ -42,7 +42,7 @@ public class CooperaAdminService implements AdminService{
         int successCount = 0;
         for (int i = 0; i < requestList.size() ; i++) {
         String link = generateInviteLink(memberId, requestList.get(i),  coopId, jwtUtil.getSecret());
-        successCount = sendInviteToRecipient(requestList, link, successCount, coopId, cooperativeService);
+        successCount = sendInviteToRecipient(requestList.get(i), link, successCount, coopId, cooperativeService);
         }
         return emailSenderResponse(successCount);
     }
@@ -57,10 +57,10 @@ public class CooperaAdminService implements AdminService{
     }
 
 
-    private int sendInviteToRecipient(List<String> requestList, String link, int successCount, String coopId, CooperativeService cooperativeService) throws CooperaException {
+    private int sendInviteToRecipient(String recipientMail, String link, int successCount, String coopId, CooperativeService cooperativeService) throws CooperaException {
         System.out.println("Link::>> "+link);
         System.out.println("showing stuff");
-        for (String recipientMail : requestList) {
+     //   for (String recipientMail : requestList) {
             Cooperative cooperative = cooperativeService.findById(coopId).get();
             String template = getFileTemplateFromClasspath(MEMBER_INVITATION_HTML_TEMPLATE_LOCATION);
             String mailBody = String.format(template, cooperative.getName(), cooperative.getCompany().getCompanyName(), link);
@@ -70,7 +70,7 @@ public class CooperaAdminService implements AdminService{
             emailDetails.setSubject(String.format(INVITATION_MAIL_SUBJECT, cooperative.getName()));
             String response = mailService.mimeMessage(emailDetails);
             if (response.equals("success")) successCount++;
-        }
+     //   }
         return successCount;
     }
 
