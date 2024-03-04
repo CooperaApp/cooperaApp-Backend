@@ -52,18 +52,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>Hi,</h1>
-                    <p>Hi %s
+        <h1>Hi %s,</h1>
+                    <p>Welcome to Coopera! We're thrilled to have you join our community of cooperatives leveraging technology to streamline processes and enhance collaboration.
                     <br>
-                    <p>Verify your account and enjoy the best experience.
+                    <p>At Coopera, our mission is to empower cooperatives like yours with intuitive tools that simplify operations, foster communication, and drive efficiency. Whether you're managing finances, coordinating tasks, or facilitating member engagement, Coopera is here to support you every step of the way.                  <br>
                     <br>
+                    As you explore our app, please don't hesitate to reach out with any questions or feedback. Our team is dedicated to ensuring your experience with Coopera is seamless and rewarding.
                     <br>
-                    Kindly click the button below to continue. Please, be aware the link will expire in the next 1 hour.
-                    <br>
-                    <br>
-
+                    Thank you for choosing Coopera to elevate your cooperative's journey. We look forward to partnering with you and witnessing the positive impact our platform brings to your organization.
                     </p>
-        <a href="%s" class="button"><h2>REGISTER</h2></a>
     </div>
 </body>
 </html>

@@ -52,18 +52,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>Hi,</h1>
-                    <p>Hi %s
+        <h1>Dear %s,</h1>
+                    <p>Welcome to the heart of our cooperative family - %s! We're delighted to have you join us as a valued member, and we can't wait to embark on this journey together
                     <br>
-                    <p>Verify your account and enjoy the best experience.
+                    <p>We're committed to fostering a vibrant, supportive community where every member plays a crucial role. Your presence enriches our cooperative and strengthens our shared vision for a better future.                  <br>
                     <br>
+                    If you ever have any questions or need assistance, please don't hesitate to reach out. Our community is here to support you every step of the way.
                     <br>
-                    Kindly click the button below to continue. Please, be aware the link will expire in the next 1 hour.
-                    <br>
-                    <br>
-
+                    Once again, welcome to %s. We're thrilled to have you as part of our cooperative family, and we look forward to building a brighter future together.
                     </p>
-        <a href="%s" class="button"><h2>REGISTER</h2></a>
     </div>
 </body>
 </html>
