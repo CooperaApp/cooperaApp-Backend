@@ -48,7 +48,7 @@ public class CooperaAdminService implements AdminService{
     }
 
     private static String generateInviteLink(String memberId, String memberEmail,  String cooperativeId, String secret) {
-        return "localhost:3000/membersRegister?token=" + JWT.create().withIssuedAt(Instant.now()).
+        return "http://localhost:3000/membersRegister?token=" + JWT.create().withIssuedAt(Instant.now()).
                 withClaim("memberId", memberId).
                 withClaim("cooperativeId", cooperativeId).
                 withClaim("memberEmail", memberEmail).
@@ -66,7 +66,7 @@ public class CooperaAdminService implements AdminService{
             String mailBody = String.format(template, cooperative.getName(), cooperative.getCompany().getCompanyName(), link);
             EmailDetails emailDetails = new EmailDetails();
             emailDetails.setRecipient(recipientMail);
-            emailDetails.setMsgBody(mailBody + " " + link);
+            emailDetails.setMsgBody(mailBody);
             emailDetails.setSubject(String.format(INVITATION_MAIL_SUBJECT, cooperative.getName()));
             String response = mailService.mimeMessage(emailDetails);
             if (response.equals("success")) successCount++;
