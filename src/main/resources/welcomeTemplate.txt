@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #009688;
+            font-size: 24px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #ffffff;
+            font-size: 14px;
+            margin-top: -5px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #009688;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #007a6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hi %s,</h1>
+                    <p>Welcome to Coopera! We're thrilled to have you join our community of cooperatives leveraging technology to streamline processes and enhance collaboration.
+                    <br>
+                    <p>At Coopera, our mission is to empower cooperatives like yours with intuitive tools that simplify operations, foster communication, and drive efficiency. Whether you're managing finances, coordinating tasks, or facilitating member engagement, Coopera is here to support you every step of the way.                  <br>
+                    <br>
+                    As you explore our app, please don't hesitate to reach out with any questions or feedback. Our team is dedicated to ensuring your experience with Coopera is seamless and rewarding.
+                    <br>
+                    Thank you for choosing Coopera to elevate your cooperative's journey. We look forward to partnering with you and witnessing the positive impact our platform brings to your organization.
+                    </p>
+    </div>
+</body>
+</html>

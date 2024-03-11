@@ -61,7 +61,7 @@
                     Kindly click the button below to continue. Please, be aware the link will expire in the next 1 hour.
                     <br>
                     <br>
-                    %s
+
                     </p>
         <a href="%s" class="button"><h2>REGISTER</h2></a>
     </div>

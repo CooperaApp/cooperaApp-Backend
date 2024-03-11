@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #009688;
+            font-size: 24px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #ffffff;
+            font-size: 14px;
+            margin-top: -5px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #009688;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #007a6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dear %s,</h1>
+                    <p>Welcome to the heart of our cooperative family - %s! We're delighted to have you join us as a valued member, and we can't wait to embark on this journey together
+                    <br>
+                    <p>We're committed to fostering a vibrant, supportive community where every member plays a crucial role. Your presence enriches our cooperative and strengthens our shared vision for a better future.                  <br>
+                    <br>
+                    If you ever have any questions or need assistance, please don't hesitate to reach out. Our community is here to support you every step of the way.
+                    <br>
+                    Once again, welcome to %s. We're thrilled to have you as part of our cooperative family, and we look forward to building a brighter future together.
+                    </p>
+    </div>
+</body>
+</html>

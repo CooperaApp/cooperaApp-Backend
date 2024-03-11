@@ -20,6 +20,7 @@ import com.coopera.cooperaApp.services.Mail.MailService;
 import com.coopera.cooperaApp.services.SavingsServices.SavingsService;
 import com.coopera.cooperaApp.services.loanServices.LoanService;
 import com.coopera.cooperaApp.services.member.MemberService;
+import com.coopera.cooperaApp.utilities.AppUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -47,6 +48,7 @@ import java.util.*;
 import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.retrieveCooperativeId;
+import static com.coopera.cooperaApp.utilities.HtmlFileUtility.getFileTemplateFromClasspath;
 
 @Service
 @AllArgsConstructor
@@ -62,7 +64,7 @@ public class CooperaCoperativeService implements CooperativeService {
     @Override
     public RegisterCooperativeResponse registerCooperative(RegisterCooperativeRequest request, MemberService memberService) throws CooperaException {
         validateRegistrationRequest(request);
-        if(cooperativeRepository.findByEmail(request.getEmail()) != null) throw new CooperaException("Cooperative with eamil "+request.getEmail()+ " already exists");
+        if(cooperativeRepository.findByEmail(request.getEmail()) != null) throw new CooperaException("Cooperative with email "+request.getEmail()+ " already exists");
         Company company = new Company();
         modelMapper.map(request, company);
         Cooperative cooperative = initializeCooperativeData(request,  company);
@@ -73,6 +75,7 @@ public class CooperaCoperativeService implements CooperativeService {
         Cooperative savedCooperative = cooperativeRepository.save(cooperative);
         if(savedCooperative.getId() == null) throw new CooperaException("Cooperative registration failed");
         Long numberOfCooperativeMembers = memberService.getNumberOfMembersByCooperativeId(savedCooperative.getId());
+        sendMailToRecipient(savedCooperative.getName(), savedCooperative.getEmail());
         return RegisterCooperativeResponse.builder()
                 .name(savedCooperative.getName())
                 .numberOfMembers(numberOfCooperativeMembers).build();
@@ -132,10 +135,11 @@ public class CooperaCoperativeService implements CooperativeService {
             throw new CooperaException(String.format(INVALID_COOPERATIVE_EMAIL,email));
         }
         String link =generateLink(cooperative.getId());
+        String mailBody = String.format(getFileTemplateFromClasspath(ACCOUNT_VERIFICATION_HTML_TEMPLATE_LOCATION), cooperative.getName(), link);
         EmailDetails emailDetails = new EmailDetails();
-        emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT );
+        emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT);
         emailDetails.setRecipient(cooperative.getEmail());
-        emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT,cooperative.getName(),link));
+        emailDetails.setMsgBody(mailBody +" " + link);
         return mailService.mimeMessage(emailDetails);
     }
     private String generateLink(String cooperativeId) {
@@ -271,5 +275,18 @@ public class CooperaCoperativeService implements CooperativeService {
             throw new CooperaException(COOPERATIVE_UPDATE_FAILED);
         }
     }
+    private void sendMailToRecipient(String recipientName, String recipientMail) {
+       try{
+        String template = getFileTemplateFromClasspath(WELCOME_MAIL_TEMPLATE_LOCATION);
+        String mailBody = String.format(template, recipientName);
+        EmailDetails emailDetails = new EmailDetails();
+        emailDetails.setRecipient(recipientMail);
+        emailDetails.setMsgBody(mailBody);
+        emailDetails.setSubject(String.format(WELCOME_MAIL_SUBJECT, "Coopera"));
+        mailService.mimeMessage(emailDetails);}
+       catch (CooperaException e){
+           log.info("Error: " + e);
+       }
 
+    }
 }

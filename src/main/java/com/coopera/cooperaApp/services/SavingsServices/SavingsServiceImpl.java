@@ -9,6 +9,7 @@ import com.coopera.cooperaApp.repositories.SavingsLogRepository;
 import com.coopera.cooperaApp.services.cooperative.CooperativeService;
 import com.coopera.cooperaApp.services.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ import static com.coopera.cooperaApp.utilities.AppUtils.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SavingsServiceImpl implements SavingsService {
     private final SavingsLogRepository savingsLogRepository;
     private final MemberService memberService;
@@ -27,17 +29,15 @@ public class SavingsServiceImpl implements SavingsService {
     public SavingsLog saveToCooperative(SaveRequest saveRequest, MemberService memberService) throws CooperaException {
         if (!checkIfAmountToSaveIsValid(saveRequest.getAmountToSave())) throw new CooperaException("Invalid Amount");
         BigDecimal amount = new BigDecimal(saveRequest.getAmountToSave());
-        String memberEmail = retrieveMemberId();
-        String memberId = memberService.findMemberByMail(memberEmail).getId();
-        String cooperativeId = memberService.findMemberByMail(memberEmail).getCooperativeId();
+        String memberId = retrieveMemberId();
         MemberResponse foundMember = memberService.findById(memberId);
         SavingsLog newSavingsLog = SavingsLog.builder()
                 .amountSaved(amount)
                 .timeSaved(LocalDateTime.now())
                 .memberName(foundMember.getName())
-                .memberId(memberId)
+                .memberId(foundMember.getId())
                 .memberEmail(foundMember.getEmail())
-                .cooperativeId(cooperativeId)
+                .cooperativeId(foundMember.getCooperativeId())
                 .savingsStatus(SavingsStatus.PENDING)
                 .build();
         return savingsLogRepository.save(newSavingsLog);

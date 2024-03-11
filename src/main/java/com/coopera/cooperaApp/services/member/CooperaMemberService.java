@@ -33,10 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static com.coopera.cooperaApp.utilities.AppUtils.*;
+import static com.coopera.cooperaApp.utilities.HtmlFileUtility.getFileTemplateFromClasspath;
 
 @Service
 @AllArgsConstructor
@@ -61,6 +60,7 @@ public class CooperaMemberService implements MemberService {
         Cooperative cooperative = optionalCooperative.orElseThrow(() -> new CooperaException(String.format("Cooperative with %s id not found", cooperativeId)));
         cooperativeService.save(cooperative);
         log.info(memberRepository.findAll().size() + "this is all members");
+        sendMailToRecipient(savedMember.getFirstName()+" "+savedMember.getLastName(), savedMember.getEmail(),cooperative.getName());
         return MemberResponse.builder().
                 id(savedMember.getId()).
                 firstName(savedMember.getFirstName()).
@@ -159,9 +159,10 @@ public class CooperaMemberService implements MemberService {
     }
 
     private void checkIfMemberExistByEmail(String emailAddress) throws CooperaException {
-        var existingMember =findAllMembersWithoutPagination();
-       var member= existingMember.stream().filter(c->c.getEmail().equals(emailAddress)).findAny().orElseThrow(() -> new CooperaException("Member with this email already exists"));
-
+        Optional<Member> existingMember = memberRepository.findByEmail(emailAddress);
+        if (existingMember.isPresent()) {
+            throw new CooperaException("Member with this email already exists");
+        }
     }
 
     private Map<String, Claim> extractClaimsFromToken(String token) {
@@ -179,11 +180,13 @@ public class CooperaMemberService implements MemberService {
         if (member.isEmpty()) {
             throw new CooperaException(String.format(INVALID_MEMBER_EMAIL, email));
         }
+        String link =generateLink(member.get().getId());
+        String mailBody = String.format(getFileTemplateFromClasspath(ACCOUNT_VERIFICATION_HTML_TEMPLATE_LOCATION), member.get().getFirstName(), link);
         EmailDetails emailDetails = new EmailDetails();
         emailDetails.setSubject(ACCOUNT_VERIFICATION_SUBJECT);
         emailDetails.setRecipient(member.get().getEmail());
-        emailDetails.setMsgBody(String.format(VERIFY_ACCOUNT, member.get().getFirstName(), generateLink(member.get().getId())));
-        return mailService.sendEmail(emailDetails);
+        emailDetails.setMsgBody(mailBody +" " + link);
+        return mailService.mimeMessage(emailDetails);
     }
     private  String generateLink(String memberId) {
         return FRONTEND_URL+"reset-password?token=" +
@@ -218,5 +221,18 @@ public class CooperaMemberService implements MemberService {
                 .position(member.getPosition())
                 .id(member.getId()).build();
     }
+    private void sendMailToRecipient(String recipientName, String recipientMail, String cooperativeName) {
+        try{
+            String template = getFileTemplateFromClasspath(MEMBER_WELCOME_MAIL_TEMPLATE_LOCATION);
+            String mailBody = String.format(template, recipientName,cooperativeName, cooperativeName);
+            EmailDetails emailDetails = new EmailDetails();
+            emailDetails.setRecipient(recipientMail);
+            emailDetails.setMsgBody(mailBody);
+            emailDetails.setSubject(String.format(WELCOME_MAIL_SUBJECT, cooperativeName));
+            mailService.mimeMessage(emailDetails);}
+        catch (CooperaException e){
+            log.info("Error: " + e);
+        }
 
+    }
 }
