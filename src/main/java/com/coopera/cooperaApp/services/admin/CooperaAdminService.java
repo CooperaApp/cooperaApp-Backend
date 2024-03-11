@@ -26,28 +26,29 @@ import static com.coopera.cooperaApp.utilities.HtmlFileUtility.getFileTemplateFr
 @AllArgsConstructor
 @Service
 @Slf4j
-public class CooperaAdminService implements AdminService{
+public class CooperaAdminService implements AdminService {
     private final MemberService memberService;
 
     private final MailService mailService;
     private final JwtUtil jwtUtil;
 
     public static final String JWT_SECRET = "${jwt.secret}";
+
     @Override
     public Object generateInvitationLink(InvitationLinkRequest recipient, CooperativeService cooperativeService) throws CooperaException {
-        String memberId = generateMemberId();
-        String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         List<String> requestList = recipient.getRecipientEmail();
         int successCount = 0;
-        for (int i = 0; i < requestList.size() ; i++) {
-        String link = generateInviteLink(memberId, requestList.get(i),  coopId, jwtUtil.getSecret());
-        successCount = sendInviteToRecipient(requestList.get(i), link, successCount, coopId, cooperativeService);
+        for (String s : requestList) {
+            String memberId = generateMemberId();
+            String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+            String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
+            String link = generateInviteLink(memberId, s, coopId, jwtUtil.getSecret());
+            successCount = sendInviteToRecipient(s, link, successCount, coopId, cooperativeService);
         }
         return emailSenderResponse(successCount);
     }
 
-    private static String generateInviteLink(String memberId, String memberEmail,  String cooperativeId, String secret) {
+    private static String generateInviteLink(String memberId, String memberEmail, String cooperativeId, String secret) {
         return "http://localhost:3000/membersRegister?token=" + JWT.create().withIssuedAt(Instant.now()).
                 withClaim("memberId", memberId).
                 withClaim("cooperativeId", cooperativeId).
@@ -58,19 +59,19 @@ public class CooperaAdminService implements AdminService{
 
 
     private int sendInviteToRecipient(String recipientMail, String link, int successCount, String coopId, CooperativeService cooperativeService) throws CooperaException {
-        System.out.println("Link::>> "+link);
+        System.out.println("Link::>> " + link);
         System.out.println("showing stuff");
-     //   for (String recipientMail : requestList) {
-            Cooperative cooperative = cooperativeService.findById(coopId).get();
-            String template = getFileTemplateFromClasspath(MEMBER_INVITATION_HTML_TEMPLATE_LOCATION);
-            String mailBody = String.format(template, cooperative.getName(), cooperative.getCompany().getCompanyName(), link);
-            EmailDetails emailDetails = new EmailDetails();
-            emailDetails.setRecipient(recipientMail);
-            emailDetails.setMsgBody(mailBody);
-            emailDetails.setSubject(String.format(INVITATION_MAIL_SUBJECT, cooperative.getName()));
-            String response = mailService.mimeMessage(emailDetails);
-            if (response.equals("success")) successCount++;
-     //   }
+        //   for (String recipientMail : requestList) {
+        Cooperative cooperative = cooperativeService.findById(coopId).get();
+        String template = getFileTemplateFromClasspath(MEMBER_INVITATION_HTML_TEMPLATE_LOCATION);
+        String mailBody = String.format(template, cooperative.getName(), cooperative.getCompany().getCompanyName(), link);
+        EmailDetails emailDetails = new EmailDetails();
+        emailDetails.setRecipient(recipientMail);
+        emailDetails.setMsgBody(mailBody);
+        emailDetails.setSubject(String.format(INVITATION_MAIL_SUBJECT, cooperative.getName()));
+        String response = mailService.mimeMessage(emailDetails);
+        if (response.equals("success")) successCount++;
+        //   }
         return successCount;
     }
 
@@ -80,7 +81,7 @@ public class CooperaAdminService implements AdminService{
         else throw new CooperaException("Invite could not be sent");
     }
 
-    private String generateMemberId(){
+    private String generateMemberId() {
         String cooperativeId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         String coopId = cooperativeId.substring(1, cooperativeId.length() - 1);
         var currentSizeOfMembersPlusOne = memberService.findAllMembersWithoutPagination().size() + 1;
